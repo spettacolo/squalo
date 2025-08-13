@@ -2,26 +2,27 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
         shark: {
-          dark: "#011936", // blu scuro profondo
-          mid: "#033860", // blu oceano
-          light: "#2ca6a4", // turchese acqua
-          sand: "#f2f5f7", // sabbia chiara
+          dark: "#011936", // blu scurissimo
+          mid: "#033860",  // blu oceano
+          light: "#2CA6A4", // turchese acqua
+          sand: "#F2F5F7", // sabbia chiara
         },
       },
       fontFamily: {
-        heading: ["'Poppins'", "sans-serif"],
-        body: ["'Inter'", "sans-serif"],
+        heading: ["Poppins", "sans-serif"],
+        body: ["Inter", "sans-serif"],
       },
     },
   },
   plugins: [],
 };
+
 export default config;

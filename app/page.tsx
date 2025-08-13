@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import fullpage from "fullpage.js";
 import "fullpage.js/dist/fullpage.css";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import { Github, Linkedin, Mail } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -15,32 +15,47 @@ import {
   CardContent,
 } from "@/components/ui/card";
 
-const BG_URL = "/9581017_37132.svg"; // SVG in public/
+const BG_URL = "/squalo_bg.svg"; // Metti il tuo SVG in public/
 
 export default function HomePage() {
+  const y = useMotionValue(0);
+  const backgroundPosY = useTransform(y, [0, 500], ["center", "top"]);
+
   useEffect(() => {
+    // Fullpage init
     new fullpage("#fullpage", {
+      licenseKey: 'YOUR_KEY_HERE',
       autoScrolling: true,
       navigation: true,
-      anchors: ["home", "projects", "experience", "contact"],
+      anchors: ["home", "projects", "experience", "contact", "footer"],
       scrollingSpeed: 800,
       easingcss3: "ease-in-out",
     });
-  }, []);
+
+    // Parallax effect
+    const handleScroll = () => {
+      const offset = window.scrollY * 0.2;
+      y.set(offset);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [y]);
 
   return (
-    <main
-      className="text-white font-body"
+    <motion.main
+      className="text-white font-body relative"
       style={{
         backgroundImage: `url(${BG_URL})`,
         backgroundSize: "cover",
         backgroundAttachment: "fixed",
-        backgroundPosition: "center",
+        backgroundPositionX: "center",
+        backgroundPositionY: backgroundPosY,
       }}
     >
-      {/* overlay per contrasto */}
+      {/* Overlay scuro */}
       <div className="absolute inset-0 bg-shark-dark/70 backdrop-blur-sm z-0" />
 
+      {/* Fullpage container */}
       <div id="fullpage" className="relative z-10">
         <div className="section"><Hero /></div>
         <div className="section"><Projects /></div>
@@ -48,7 +63,7 @@ export default function HomePage() {
         <div className="section"><Contact /></div>
         <div className="section"><Footer /></div>
       </div>
-    </main>
+    </motion.main>
   );
 }
 
