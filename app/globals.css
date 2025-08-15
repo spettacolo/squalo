@@ -6,8 +6,10 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
+html, body, #__next {
   scroll-behavior: smooth;
+  height: 100%;
+  overflow: hidden; /* prevent viewport scrolling so we can scroll the page content only inside a container */
 }
 
 
@@ -129,4 +131,11 @@ html, body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* scroll only inside the content area; keeps the background fixed and avoids showing underlying background when overscrolling */
+.content-scroll {
+  height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }

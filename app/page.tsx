@@ -1,9 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
-import fullpage from "fullpage.js";
-import "fullpage.js/dist/fullpage.css";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { Github, Linkedin, Mail } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -15,95 +12,29 @@ import {
   CardContent,
 } from "@/components/ui/card";
 
-const BG_URL = "/squalo_bg.svg"; // Metti il tuo SVG in public/
+const BG_URL = "/squalo_bg.svg";
 
 export default function HomePage() {
-  const y = useMotionValue(0);
-  const backgroundPosY = useTransform(y, [0, 500], ["center", "top"]);
-
-  useEffect(() => {
-    // Fullpage init
-    new fullpage("#fullpage", {
-      licenseKey: 'YOUR_KEY_HERE',
-      autoScrolling: true,
-      navigation: true,
-      anchors: ["home", "projects", "experience", "contact", "footer"],
-      scrollingSpeed: 800,
-      easingcss3: "ease-in-out",
-    });
-
-    // Parallax effect
-    const handleScroll = () => {
-      const offset = window.scrollY * 0.2;
-      y.set(offset);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [y]);
-
   return (
-    <motion.main
-      className="text-white font-body relative"
+    <main
+      className="text-white font-body relative min-h-screen"
       style={{
         backgroundImage: `url(${BG_URL})`,
         backgroundSize: "cover",
         backgroundAttachment: "fixed",
-        backgroundPositionX: "center",
-        backgroundPositionY: backgroundPosY,
+        backgroundPosition: "center",
       }}
     >
-      {/* Overlay scuro */}
-      <div className="absolute inset-0 bg-shark-dark/70 backdrop-blur-sm z-0" />
+      <div className="absolute inset-0 bg-shark-dark/70 z-0" />
 
-      {/* Fullpage container */}
-      <div id="fullpage" className="relative z-10">
-        <div className="section"><Hero /></div>
-        <div className="section"><Projects /></div>
-        <div className="section"><Experience /></div>
-        <div className="section"><Contact /></div>
-        <div className="section"><Footer /></div>
+      {/* content-scroll keeps the viewport background fixed and moves scrolling to this container only */}
+      <div className="relative z-10 py-20 content-scroll">
+        <Projects />
+        <Experience />
       </div>
-    </motion.main>
+    </main>
   );
 }
-
-const Hero = () => (
-  <div className="flex flex-col items-center justify-center h-full text-center px-4">
-    <motion.h1
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="font-heading text-6xl font-extrabold mb-4 text-shark-light"
-    >
-      Benvenuto su <span className="text-shark-light">Squalo.dev</span>
-    </motion.h1>
-    <motion.p
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.3 }}
-      className="text-lg max-w-xl mb-6 text-shark-sand"
-    >
-      Creo esperienze web immersive, con design curato e animazioni fluide.
-    </motion.p>
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.6 }}
-      className="flex gap-4"
-    >
-      <Button asChild className="bg-shark-light hover:bg-shark-mid">
-        <Link href="#projects">Progetti</Link>
-      </Button>
-      <Button
-        variant="outline"
-        asChild
-        className="border-shark-light text-shark-light hover:bg-shark-light hover:text-white"
-      >
-        <Link href="#contact">Contattami</Link>
-      </Button>
-    </motion.div>
-  </div>
-);
 
 const projects = [
   { title: "Progetto 1", description: "Descrizione breve", link: "#" },
@@ -112,7 +43,7 @@ const projects = [
 ];
 
 const Projects = () => (
-  <div className="h-full flex flex-col justify-center container mx-auto px-4">
+  <div className="container mx-auto px-4 mb-20">
     <h2 className="font-heading text-4xl text-shark-light mb-8">Progetti</h2>
     <div className="grid md:grid-cols-3 gap-6">
       {projects.map((p, i) => (
@@ -145,7 +76,7 @@ const experiences = [
 ];
 
 const Experience = () => (
-  <div className="h-full flex flex-col justify-center container mx-auto px-4">
+  <div className="container mx-auto px-4">
     <h2 className="font-heading text-4xl text-shark-light mb-8">Esperienza</h2>
     <div className="space-y-6">
       {experiences.map((exp, i) => (
@@ -167,29 +98,5 @@ const Experience = () => (
         </motion.div>
       ))}
     </div>
-  </div>
-);
-
-const Contact = () => (
-  <div className="h-full flex flex-col justify-center items-center text-center px-4">
-    <h2 className="font-heading text-4xl text-shark-light mb-4">Contattami</h2>
-    <p className="mb-4 text-shark-sand">Scrivimi per collaborazioni o progetti!</p>
-    <div className="flex gap-6">
-      <Link href="mailto:tuo@email.com">
-        <Mail className="w-7 h-7 text-shark-light hover:text-white transition" />
-      </Link>
-      <Link href="https://github.com/tuo-username" target="_blank">
-        <Github className="w-7 h-7 text-shark-light hover:text-white transition" />
-      </Link>
-      <Link href="https://linkedin.com/in/tuo-username" target="_blank">
-        <Linkedin className="w-7 h-7 text-shark-light hover:text-white transition" />
-      </Link>
-    </div>
-  </div>
-);
-
-const Footer = () => (
-  <div className="h-full flex flex-col justify-center items-center text-sm text-shark-sand">
-    © {new Date().getFullYear()} Squalo.dev - Tutti i diritti riservati
   </div>
 );
