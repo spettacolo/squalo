@@ -25,7 +25,7 @@ export default function HomePage() {
 
       {/* single big card container */}
       <div className="relative z-10 py-12 flex items-start justify-center content-scroll">
-        <Card className="w-[94%] sm:w-[86%] md:max-w-5xl lg:max-w-6xl mx-auto p-6 sm:p-8 min-h-[80vh] bg-shark-mid/30 backdrop-blur-sm border border-shark-light/30 rounded-2xl overflow-auto shadow-xl">
+  <Card className="w-[92%] sm:w-[82%] md:max-w-5xl lg:max-w-6xl mx-auto p-6 sm:p-8 min-h-[80vh] bg-shark-mid/30 backdrop-blur-sm rounded-2xl overflow-auto">
           <CardHeader>
             <CardTitle>
               <h1 className="text-4xl md:text-5xl font-heading">Nome Cognome — Portfolio</h1>
@@ -68,7 +68,8 @@ export default function HomePage() {
                 </div>
               </motion.div>
             </section>
-            {/* spacer to ensure bottom border remains visible when scrolled to end */}
+            {/* subtle divider and spacer to mark card end without a bright border */}
+            <div className="mt-6 border-t border-shark-dark/40" />
             <div className="h-6" />
           </CardContent>
         </Card>
