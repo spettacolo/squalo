@@ -1,14 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
 } from "@/components/ui/card";
 
@@ -27,76 +23,54 @@ export default function HomePage() {
     >
       <div className="absolute inset-0 bg-shark-dark/70 z-0" />
 
-      {/* content-scroll keeps the viewport background fixed and moves scrolling to this container only */}
-      <div className="relative z-10 py-20 content-scroll">
-        <Projects />
-        <Experience />
+      {/* single big card container */}
+      <div className="relative z-10 py-12 flex items-start justify-center content-scroll">
+        <Card className="w-[95%] md:max-w-5xl lg:max-w-6xl mx-auto p-8 min-h-[80vh] bg-shark-mid/30 backdrop-blur-sm border-shark-light/20 overflow-auto">
+          <CardHeader>
+            <CardTitle>
+              <h1 className="text-4xl md:text-5xl font-heading">Nome Cognome — Portfolio</h1>
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            <section className="space-y-6">
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+                <div className="rounded-md bg-shark-light/5 p-6">
+                  <h2 className="text-2xl font-semibold">Hero / Intro</h2>
+                  <p className="text-shark-sand mt-2">Breve descrizione professionale, ruolo e obiettivi. (placeholder)</p>
+                </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+                <h3 className="text-xl font-semibold">Progetti principali</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} className="h-36 rounded-lg bg-shark-light/6 flex items-center justify-center">
+                      <span className="text-shark-sand/80">Project {i} (placeholder)</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+                <h3 className="text-xl font-semibold">Competenze</h3>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {['React','Next.js','TypeScript','Tailwind','Framer Motion','Testing'].map((s) => (
+                    <span key={s} className="px-3 py-1 rounded-full bg-shark-light/8 text-sm">{s}</span>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
+                <h3 className="text-xl font-semibold">Contatti</h3>
+                <div className="mt-3">
+                  <div className="h-10 w-full rounded bg-shark-light/6 flex items-center px-3">email@esempio.com (placeholder)</div>
+                </div>
+              </motion.div>
+            </section>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );
 }
-
-const projects = [
-  { title: "Progetto 1", description: "Descrizione breve", link: "#" },
-  { title: "Progetto 2", description: "Descrizione breve", link: "#" },
-  { title: "Progetto 3", description: "Descrizione breve", link: "#" },
-];
-
-const Projects = () => (
-  <div className="container mx-auto px-4 mb-20">
-    <h2 className="font-heading text-4xl text-shark-light mb-8">Progetti</h2>
-    <div className="grid md:grid-cols-3 gap-6">
-      {projects.map((p, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.1 }}
-        >
-          <Card className="bg-shark-mid/30 backdrop-blur-sm border-shark-light/20">
-            <CardHeader>
-              <CardTitle>{p.title}</CardTitle>
-              <CardDescription>{p.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button asChild className="bg-shark-light hover:bg-shark-mid">
-                <Link href={p.link}>Scopri di più</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
-      ))}
-    </div>
-  </div>
-);
-
-const experiences = [
-  { role: "Frontend Developer", company: "Azienda X", period: "2022 - Presente" },
-  { role: "Web Designer", company: "Azienda Y", period: "2020 - 2022" },
-];
-
-const Experience = () => (
-  <div className="container mx-auto px-4">
-    <h2 className="font-heading text-4xl text-shark-light mb-8">Esperienza</h2>
-    <div className="space-y-6">
-      {experiences.map((exp, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ delay: i * 0.1 }}
-        >
-          <Card className="bg-shark-mid/30 backdrop-blur-sm border-shark-light/20">
-            <CardHeader>
-              <CardTitle>{exp.role}</CardTitle>
-              <CardDescription>{exp.company}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-shark-sand">{exp.period}</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      ))}
-    </div>
-  </div>
-);
