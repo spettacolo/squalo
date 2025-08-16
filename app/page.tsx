@@ -20,7 +20,8 @@ export default function HomePage() {
       <div
         aria-hidden
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ /*backgroundImage: `url(${BG_URL})`,*/ backgroundColor: '#2e59adff' }}
+        /*style={{ /*backgroundImage: `url(${BG_URL})`, backgroundColor: '#2e59adff' }}*/
+        style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 25%, #1e40af 50%, #2563eb 75%, #1d4ed8 100%)' }}
       />
       <div className="absolute inset-0 bg-shark-dark/80 z-10" />
 
