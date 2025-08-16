@@ -2,14 +2,23 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+function Card({ className, style, ...props }: React.ComponentProps<"div">) {
+  const defaultStyle: React.CSSProperties = {
+    background: 'rgba(255, 255, 255, 0.21)',
+    border: '1px solid rgba(255, 255, 255, 0.3)',
+    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+    backdropFilter: 'blur(5px)',
+    WebkitBackdropFilter: 'blur(5px)'
+  }
+
   return (
     <div
       data-slot="card"
       className={cn(
-        "bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-md shadow-lg flex flex-col gap-6 rounded-xl py-6",
+        "backdrop-blur-md shadow-lg flex flex-col gap-6 rounded-xl py-6",
         className
       )}
+      style={{ ...defaultStyle, ...(style as React.CSSProperties) }}
       {...props}
     />
   )
