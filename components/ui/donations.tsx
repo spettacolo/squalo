@@ -52,7 +52,7 @@ export default function Donations({ entries = DEFAULTS }: { entries?: Entry[] })
                 tabIndex={0}
                 onClick={() => handleCopy(e.full ?? e.address, e.key)}
                 onKeyDown={(ev) => ev.key === "Enter" && handleCopy(e.full ?? e.address, e.key)}
-                className="donation-address donation-copyable cursor-pointer select-none inline-flex items-center"
+                className="donation-address donation-copyable cursor-pointer select-none inline-flex items-center w-full justify-start text-left"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.985 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
