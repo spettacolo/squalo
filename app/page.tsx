@@ -20,7 +20,7 @@ export default function HomePage() {
       <div
         aria-hidden
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{/* backgroundImage: `url(${BG_URL})`, */backgroundColor: '#071022' }}
+        style={{/* backgroundImage: `url(${BG_URL})`, */backgroundColor: '#2e59adff' }}
       />
       <div className="absolute inset-0 bg-shark-dark/80 z-10" />
 
@@ -34,7 +34,7 @@ export default function HomePage() {
       boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
       backdropFilter: 'blur(5px)',
       WebkitBackdropFilter: 'blur(5px)',
-      border: '1px solid rgba(255, 255, 255, 0.3)'
+      /*border: '1px solid rgba(255, 255, 255, 0.3)'*/
     }}
   >
           <CardHeader>
