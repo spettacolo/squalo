@@ -11,8 +11,8 @@ html, body, #__next {
   scroll-behavior: smooth;
   height: 100%;
   overflow: hidden; /* prevent viewport scrolling so we can scroll the page content only inside a container */
-  /* make the root background match the site's dark theme so elastic overscroll doesn't reveal white */
-  background-color: var(--background);
+  /* fallback dark background so the page doesn't appear white if image/vars don't evaluate */
+  background-color: #071022;
 }
 
 
@@ -134,6 +134,11 @@ html, body, #__next {
   body {
   @apply bg-background text-foreground;
   font-family: 'Cascadia Code', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+  /* prevent text selection site-wide */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   }
 }
 
