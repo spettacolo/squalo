@@ -35,7 +35,7 @@ export default function HomePage() {
   <Card className="relative w-[92%] sm:w-[82%] md:max-w-5xl lg:max-w-6xl mx-auto p-6 sm:p-8 min-h-[80vh] bg-shark-mid/40 backdrop-blur-md rounded-2xl mb-8">
           <CardHeader>
             <CardTitle>
-              <h1 className="text-4xl md:text-5xl font-heading">Nome Cognome — Portfolio</h1>
+              <h1 className="text-4xl md:text-5xl font-heading">Hey! I'm Squalo 🦈</h1>
             </CardTitle>
           </CardHeader>
 
@@ -43,13 +43,13 @@ export default function HomePage() {
             <section className="space-y-6">
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
                 <div className="rounded-md bg-shark-light/5 p-6">
-                  <h2 className="text-2xl font-semibold">Hero / Intro</h2>
+                  <h2 className="text-2xl font-semibold">About</h2>
                   <p className="text-shark-sand mt-2">Breve descrizione professionale, ruolo e obiettivi. (placeholder)</p>
                 </div>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
-                <h3 className="text-xl font-semibold">Progetti principali</h3>
+                <h3 className="text-xl font-semibold">Projects</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <div key={i} className="h-36 rounded-lg bg-shark-light/6 flex items-center justify-center">
@@ -60,7 +60,7 @@ export default function HomePage() {
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-                <h3 className="text-xl font-semibold">Competenze</h3>
+                <h3 className="text-xl font-semibold">Skills</h3>
                 <div className="flex flex-wrap gap-2 mt-3">
                   {['React','Next.js','TypeScript','Tailwind','Framer Motion','Testing'].map((s) => (
                     <span key={s} className="px-3 py-1 rounded-full bg-shark-light/8 text-sm">{s}</span>
@@ -69,11 +69,13 @@ export default function HomePage() {
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
-                <h3 className="text-xl font-semibold">Contatti</h3>
+                <h3 className="text-xl font-semibold">Contact Me</h3>
+                {/* TODO: farlo diventare una chat */}
                 <div className="mt-3">
                   <div className="h-10 w-full rounded bg-shark-light/6 flex items-center px-3">email@esempio.com (placeholder)</div>
                 </div>
               </motion.div>
+              {/* TODO: aggiungere parte donazioni */}
             </section>
             {/* icons: right-center on md+, bottom-center on mobile; icons only */}
             <div>
