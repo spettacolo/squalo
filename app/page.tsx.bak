@@ -1,0 +1,214 @@
+"use client";
+
+import React, { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
+
+const BG_URL = "/squalo_bg.svg";
+
+// Wrap each word in a span so we can color words individually when they overlap the aqua area
+function Wordify({ text }: { text: string }) {
+  const parts = text.split(/(\s+)/); // keep whitespace
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.trim().length === 0 ? (
+          <span key={i}>{part}</span>
+        ) : (
+          <span key={i} className="aqua-aware-word inline">{part}</span>
+        )
+      )}
+    </>
+  );
+}
+
+export default function HomePage() {
+  const mainRef = useRef<HTMLElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+  // Highlight only the bright aqua region (near #a4e9db) with a readable darker blue.
+  // Use area sampling and stricter checks to avoid matching darker blue/teal areas.
+  const TARGET = [164, 233, 219]; // #a4e9db
+  const THRESHOLD = 60; // smaller euclidean distance threshold for stricter matching
+  const HIGHLIGHT = '#1366D6'; // darker, more readable blue
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = BG_URL;
+
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d')!;
+
+    let scheduled = false;
+
+    function dist(a: number[], b: number[]) {
+      const dr = a[0] - b[0];
+      const dg = a[1] - b[1];
+      const db = a[2] - b[2];
+      return Math.sqrt(dr * dr + dg * dg + db * db);
+    }
+
+    function sample() {
+      if (!cardRef.current || !mainRef.current) return;
+      const containerRect = mainRef.current.getBoundingClientRect();
+      const Wc = containerRect.width;
+      const Hc = containerRect.height;
+
+      const Wi = img.naturalWidth || img.width;
+      const Hi = img.naturalHeight || img.height;
+      if (!Wi || !Hi) return;
+
+      const scale = Math.max(Wc / Wi, Hc / Hi);
+      const Wr = Wi * scale;
+      const Hr = Hi * scale;
+      const offsetX = (Wr - Wc) / 2;
+      const offsetY = (Hr - Hc) / 2;
+
+      canvas.width = Wi;
+      canvas.height = Hi;
+      ctx.clearRect(0, 0, Wi, Hi);
+      ctx.drawImage(img, 0, 0, Wi, Hi);
+
+  const els = cardRef.current.querySelectorAll<HTMLElement>('.aqua-aware-word');
+      els.forEach((el) => {
+  const r = el.getBoundingClientRect();
+        const ex = r.left - containerRect.left + r.width / 2;
+        const ey = r.top - containerRect.top + r.height / 2;
+
+        const imgX = Math.round((ex + offsetX) / scale);
+        const imgY = Math.round((ey + offsetY) / scale);
+
+        if (imgX < 0 || imgY < 0 || imgX >= Wi || imgY >= Hi) {
+          el.style.color = '#ffffff';
+          return;
+        }
+
+        // sample a small 3x3 area around the point and average to reduce noise
+        const SAMPLE = 1; // radius
+        let sr = 0, sg = 0, sb = 0, scount = 0;
+        for (let sx = -SAMPLE; sx <= SAMPLE; sx++) {
+          for (let sy = -SAMPLE; sy <= SAMPLE; sy++) {
+            const sx2 = imgX + sx;
+            const sy2 = imgY + sy;
+            if (sx2 < 0 || sy2 < 0 || sx2 >= Wi || sy2 >= Hi) continue;
+            const p = ctx.getImageData(sx2, sy2, 1, 1).data;
+            sr += p[0]; sg += p[1]; sb += p[2]; scount++;
+          }
+        }
+        if (scount === 0) {
+          el.style.color = '#ffffff';
+          return;
+        }
+        const avr = Math.round(sr / scount);
+        const avg = Math.round(sg / scount);
+        const avb = Math.round(sb / scount);
+        const d = dist([avr, avg, avb], TARGET);
+        const brightness = (avr + avg + avb) / 3;
+
+        // require: close to target color, fairly bright, and green/blue channels dominate red
+        if (d <= THRESHOLD && brightness >= 180 && avg >= avr && avb >= avr) {
+          el.style.transition = 'color 220ms ease';
+          el.style.color = HIGHLIGHT;
+        } else {
+          el.style.transition = 'color 220ms ease';
+          el.style.color = '#ffffff';
+        }
+      });
+      scheduled = false;
+    }
+
+    function schedule() {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(sample);
+    }
+
+    if (img.complete) schedule();
+    else img.onload = schedule;
+
+    window.addEventListener('resize', schedule);
+    const sc = scrollRef.current;
+    sc?.addEventListener('scroll', schedule, { passive: true });
+
+    return () => {
+      window.removeEventListener('resize', schedule);
+      sc?.removeEventListener('scroll', schedule);
+    };
+  }, []);
+
+  return (
+    <main
+      ref={mainRef}
+      className="text-white font-body relative min-h-screen"
+      style={{
+        backgroundImage: `url(${BG_URL})`,
+        backgroundSize: "cover",
+        backgroundAttachment: "fixed",
+        backgroundPosition: "center",
+      }}
+    >
+  <div className="absolute inset-0 bg-shark-dark/80 z-0" />
+
+      {/* single big card container */}
+      <div ref={scrollRef} className="relative z-10 py-12 flex items-start justify-center content-scroll">
+  <Card className="w-[92%] sm:w-[82%] md:max-w-5xl lg:max-w-6xl mx-auto p-6 sm:p-8 min-h-[80vh] bg-shark-mid/40 backdrop-blur-md rounded-2xl overflow-auto">
+      <div ref={cardRef} className="w-full">
+          <CardHeader>
+            <CardTitle>
+              <h1 className="text-4xl md:text-5xl font-heading"><Wordify text="Nome Cognome — Portfolio" /></h1>
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className="pb-12">
+            <section className="space-y-6">
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+                <div className="rounded-md bg-shark-light/5 p-6">
+                  <h2 className="text-2xl font-semibold"><Wordify text="Hero / Intro" /></h2>
+                  <p className="text-shark-sand mt-2">Breve descrizione professionale, ruolo e obiettivi. (placeholder)</p>
+                </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+                <h3 className="text-xl font-semibold"><Wordify text="Progetti principali" /></h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} className="h-36 rounded-lg bg-shark-light/6 flex items-center justify-center">
+                      <span className="text-shark-sand/80"><Wordify text={`Project ${i} (placeholder)`} /></span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+                <h3 className="text-xl font-semibold"><Wordify text="Competenze" /></h3>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {['React','Next.js','TypeScript','Tailwind','Framer Motion','Testing'].map((s) => (
+                    <span key={s} className="px-3 py-1 rounded-full bg-shark-light/8 text-sm"><Wordify text={s} /></span>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
+                <h3 className="text-xl font-semibold"><Wordify text="Contatti" /></h3>
+                <div className="mt-3">
+                  <div className="h-10 w-full rounded bg-shark-light/6 flex items-center px-3"><Wordify text="email@esempio.com (placeholder)" /></div>
+                </div>
+              </motion.div>
+            </section>
+            {/* subtle divider and spacer to mark card end without a bright border */}
+            <div className="mt-6 border-t border-shark-dark/40" />
+            <div className="h-6" />
+          </CardContent>
+        </div>
+        </Card>
+      </div>
+    </main>
+  );
+}
