@@ -75,7 +75,7 @@ export default function Donations({ entries = DEFAULTS }: { entries?: Entry[] })
                   aria-label={`Copia indirizzo ${e.label}`}
                   title={e.full ?? e.address}
                 >
-                  <span className="transition-colors duration-150 peer">
+                  <span className="transition-colors duration-150 peer text-left">
                     {e.address}
                   </span>
                   <div className="ml-2 relative w-4 h-4 flex-shrink-0">
