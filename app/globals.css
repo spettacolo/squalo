@@ -150,3 +150,48 @@ html, body, #__next {
   /* prevent overscroll from propagating to the viewport (avoid white/blank reveal) */
   overscroll-behavior: contain;
 }
+
+/* particle background styles */
+.particle-container {
+  position: fixed;
+  inset: 0;
+  z-index: 5; /* behind card (card is z-20) but above background */
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle-wrap {
+  position: absolute;
+  will-change: transform, opacity;
+}
+
+.particle {
+  will-change: transform, opacity;
+  filter: blur(0.6px);
+}
+
+@keyframes rise {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-120vh) translateX(var(--sway, 0px));
+    opacity: 0;
+  }
+}
+
+@keyframes sway {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(calc(var(--sway, 20px) * 1));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
