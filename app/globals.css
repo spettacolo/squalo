@@ -11,6 +11,8 @@ html, body, #__next {
   scroll-behavior: smooth;
   height: 100%;
   overflow: hidden; /* prevent viewport scrolling so we can scroll the page content only inside a container */
+  /* make the root background match the site's dark theme so elastic overscroll doesn't reveal white */
+  background-color: var(--background);
 }
 
 
@@ -140,4 +142,6 @@ html, body, #__next {
   height: 100vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  /* prevent overscroll from propagating to the viewport (avoid white/blank reveal) */
+  overscroll-behavior: contain;
 }

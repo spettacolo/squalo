@@ -15,16 +15,14 @@ const BG_URL = "/squalo_bg.svg";
 
 export default function HomePage() {
   return (
-    <main
-      className="text-white font-body relative min-h-screen"
-      style={{
-        backgroundImage: `url(${BG_URL})`,
-        backgroundSize: "cover",
-        backgroundAttachment: "fixed",
-        backgroundPosition: "center",
-      }}
-    >
-  <div className="absolute inset-0 bg-shark-dark/80 z-0" />
+    <main className="text-white font-body relative min-h-screen">
+      {/* fixed background layer for consistent mobile behavior */}
+      <div
+        aria-hidden
+        className="fixed inset-0 -z-20 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${BG_URL})` }}
+      />
+      <div className="absolute inset-0 bg-shark-dark/80 z-0" />
 
       {/* single big card container */}
       <div className="relative z-10 py-12 flex items-start justify-center content-scroll">
