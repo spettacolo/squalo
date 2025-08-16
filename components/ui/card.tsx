@@ -4,11 +4,14 @@ import { cn } from "@/lib/utils"
 
 function Card({ className, style, ...props }: React.ComponentProps<"div">) {
   const defaultStyle: React.CSSProperties = {
-    background: 'rgba(255, 255, 255, 0.21)',
-    border: '1px solid rgba(255, 255, 255, 0.3)',
-    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-    backdropFilter: 'blur(5px)',
-    WebkitBackdropFilter: 'blur(5px)'
+  /* darker semi-transparent background so text is more readable */
+  background: 'rgba(0, 0, 0, 0.45)',
+  border: '1px solid rgba(255, 255, 255, 0.06)',
+  boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+  backdropFilter: 'blur(5px)',
+  WebkitBackdropFilter: 'blur(5px)',
+  /* extra bottom padding so the card's end is visible on mobile */
+  paddingBottom: '2.5rem'
   }
 
   return (
