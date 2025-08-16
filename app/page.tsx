@@ -1,6 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Github, Linkedin, Mail } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -68,6 +71,32 @@ export default function HomePage() {
                 </div>
               </motion.div>
             </section>
+            {/* footer with custom social/contact buttons */}
+            <div className="mt-8 flex items-center gap-3">
+              <Button asChild className="bg-shark-light/10">
+                <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                  <Github className="w-4 h-4" />
+                  <span>Github</span>
+                </a>
+              </Button>
+
+              <Button asChild className="bg-shark-light/10">
+                <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                  <Linkedin className="w-4 h-4" />
+                  <span>LinkedIn</span>
+                </a>
+              </Button>
+
+              <Button asChild className="bg-shark-light/10">
+                <a href="mailto:email@esempio.com" className="flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  <span>Email</span>
+                </a>
+              </Button>
+
+              <Link href="/" className="ml-auto text-sm text-shark-sand/80">Altro</Link>
+            </div>
+
             {/* subtle divider and spacer to mark card end without a bright border */}
             <div className="mt-6 border-t border-shark-dark/40" />
             <div className="h-6" />
