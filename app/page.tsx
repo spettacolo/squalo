@@ -20,23 +20,13 @@ export default function HomePage() {
       <div
         aria-hidden
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{/* backgroundImage: `url(${BG_URL})`, */backgroundColor: '#2e59adff' }}
+        style={{ backgroundImage: `url(${BG_URL})`, backgroundColor: '#2e59adff' }}
       />
       <div className="absolute inset-0 bg-shark-dark/80 z-10" />
 
       {/* single big card container */}
     <div className="relative z-20 py-12 flex items-start justify-center content-scroll">
-  <Card
-    className="w-[92%] sm:w-[82%] md:max-w-5xl lg:max-w-6xl mx-auto p-6 sm:p-8 min-h-[80vh] overflow-auto"
-    style={{
-      background: 'rgba(255, 255, 255, 0.2)',
-      borderRadius: '16px',
-      boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-      backdropFilter: 'blur(5px)',
-      WebkitBackdropFilter: 'blur(5px)',
-      /*border: '1px solid rgba(255, 255, 255, 0.3)'*/
-    }}
-  >
+  <Card className="w-[92%] sm:w-[82%] md:max-w-5xl lg:max-w-6xl mx-auto p-6 sm:p-8 min-h-[80vh] bg-shark-mid/40 backdrop-blur-md rounded-2xl overflow-auto">
           <CardHeader>
             <CardTitle>
               <h1 className="text-4xl md:text-5xl font-heading">Nome Cognome — Portfolio</h1>
