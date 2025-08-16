@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { Github, Mail } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -71,30 +71,48 @@ export default function HomePage() {
                 </div>
               </motion.div>
             </section>
-            {/* footer with custom social/contact buttons */}
-            <div className="mt-8 flex items-center gap-3">
-              <Button asChild className="bg-shark-light/10">
-                <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                  <Github className="w-4 h-4" />
-                  <span>Github</span>
-                </a>
-              </Button>
+            {/* responsive footer with social/contact buttons */}
+            <div className="mt-8 w-full flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap gap-3">
+                <Button asChild className="bg-shark-light/10 px-3 py-2 text-sm">
+                  <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                    <Github className="w-4 h-4" />
+                    <span>Github</span>
+                  </a>
+                </Button>
 
-              <Button asChild className="bg-shark-light/10">
-                <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                  <Linkedin className="w-4 h-4" />
-                  <span>LinkedIn</span>
-                </a>
-              </Button>
+                <Button asChild className="bg-shark-light/10 px-3 py-2 text-sm">
+                  <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                    {/* Official Instagram outline-style SVG, uses currentColor */}
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.5" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5" />
+                      <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+                    </svg>
+                    <span>Instagram</span>
+                  </a>
+                </Button>
 
-              <Button asChild className="bg-shark-light/10">
-                <a href="mailto:email@esempio.com" className="flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
-                  <span>Email</span>
-                </a>
-              </Button>
+                <Button asChild className="bg-shark-light/10 px-3 py-2 text-sm">
+                  <a href="https://t.me/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                    {/* Official Telegram paper-plane outline SVG, uses currentColor */}
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                      <path d="M22 2L11 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span>Telegram</span>
+                  </a>
+                </Button>
 
-              <Link href="/" className="ml-auto text-sm text-shark-sand/80">Altro</Link>
+                <Button asChild className="bg-shark-light/10 px-3 py-2 text-sm">
+                  <a href="mailto:email@esempio.com" className="flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    <span>Email</span>
+                  </a>
+                </Button>
+              </div>
+
+              <Link href="/" className="ml-auto w-full md:w-auto text-right text-sm text-shark-sand/80">Altro</Link>
             </div>
 
             {/* subtle divider and spacer to mark card end without a bright border */}
