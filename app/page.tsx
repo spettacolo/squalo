@@ -11,6 +11,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import ParticleBackground from "@/components/ui/particle-background";
+import Donations from "@/components/ui/donations";
 
 const BG_URL = "/squalo_bg.svg";
 
@@ -75,7 +76,11 @@ export default function HomePage() {
                   <div className="h-10 w-full rounded bg-shark-light/6 flex items-center px-3">email@esempio.com (placeholder)</div>
                 </div>
               </motion.div>
-              {/* TODO: aggiungere parte donazioni */}
+
+              <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="mt-4">
+                <h3 className="text-xl font-semibold">Donations</h3>
+                <Donations />
+              </motion.div>
             </section>
             {/* icons: right-center on md+, bottom-center on mobile; icons only */}
             <div>
