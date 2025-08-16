@@ -27,7 +27,7 @@ export default function HomePage() {
 
       {/* single big card container */}
     <div className="relative z-20 py-12 flex items-start justify-center content-scroll">
-  <Card className="w-[92%] sm:w-[82%] md:max-w-5xl lg:max-w-6xl mx-auto p-6 sm:p-8 min-h-[80vh] bg-shark-mid/40 backdrop-blur-md rounded-2xl overflow-auto">
+  <Card className="w-[92%] sm:w-[82%] md:max-w-5xl lg:max-w-6xl mx-auto p-6 sm:p-8 min-h-[80vh] bg-shark-mid/40 backdrop-blur-md rounded-2xl mb-8">
           <CardHeader>
             <CardTitle>
               <h1 className="text-4xl md:text-5xl font-heading">Nome Cognome — Portfolio</h1>
