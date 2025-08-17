@@ -89,8 +89,12 @@ export default function HomePage() {
                         </button>
 
                         <style>{`
-                          details[open] .collapsed { display: none; }
-                          details:not([open]) .expanded { display: none; }
+                          /* make summary act like a block and remove default marker */
+                          details summary { display: block; list-style: none; }
+                          /* hide the truncated summary content when details is open */
+                          details[open] .collapsed { display: none !important; }
+                          /* show expanded only when details is open */
+                          details:not([open]) .expanded { display: none !important; }
                         `}</style>
                       </div>
                       </details>
