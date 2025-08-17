@@ -203,7 +203,7 @@ export default function HomePage() {
             <div className="mt-6 border-t border-shark-dark/40" />
             <div className="h-6" />
             <div className="text-right">
-              <p className="text-xs text-shark-sand/60">Made with ♡ by squalo.dev</p>
+              <p className="text-xs text-shark-sand/60">Made with ❤️ by squalo.dev</p> {/*♡*/}
             </div>
           </CardContent>
         </Card>
