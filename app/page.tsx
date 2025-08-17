@@ -33,7 +33,7 @@ export default function HomePage() {
 
       {/* single big card container */}
     <div className="relative z-20 py-12 flex items-start justify-center content-scroll">
-  <Card className="relative w-[92%] sm:w-[82%] md:max-w-5xl lg:max-w-6xl mx-auto p-6 sm:p-8 min-h-[80vh] bg-shark-mid/40 backdrop-blur-md rounded-2xl mb-8">
+  <Card className="relative w-[92%] sm:w-[82%] md:max-w-5xl lg:max-w-6xl mx-auto p-4 sm:p-8 min-h-[80vh] bg-shark-mid/40 backdrop-blur-md rounded-2xl mb-8">
           <CardHeader>
             <CardTitle>
               <h1 className="text-4xl md:text-5xl font-heading">Hey! I'm Squalo 🦈</h1>
@@ -43,9 +43,9 @@ export default function HomePage() {
           <CardContent className="pb-12">
             <section className="space-y-6">
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-                <div className="rounded-md bg-shark-light/5 p-6">
+                <div className="rounded-md bg-shark-light/5 px-3 py-4 sm:p-6">
                   {/*<h2 className="text-2xl font-semibold">About</h2>*/}
-                  {/*<div>*/}
+                  <div>
                     {/* full text on md+ */}
                     <div className="hidden md:block">
                       <p className="text-shark-sand mt-2">
@@ -99,7 +99,7 @@ export default function HomePage() {
                       </div>
                       </details>
                     </div>
-                  {/*</div>*/}
+                  </div>
                 </div>
               </motion.div>
 
