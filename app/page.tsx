@@ -49,7 +49,7 @@ export default function HomePage() {
                     {/* full text on md+ */}
                     <div className="hidden md:block">
                       <p className="text-shark-sand mt-2">
-                      I'm a developer who wears many hats, always eager to learn and build. While my main gig is programming—crafting code and developing applications—I also have a keen eye for detail, which I exercise through image editing. And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the guitar, and I have previous experience with 4 years of violin, plus some basic knowledge of piano and drums.
+                      I'm a developer who wears many hats, always eager to learn and build. While my main gig is programming — crafting code and developing applications — I also have a keen eye for detail, which I exercise through image editing. And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the guitar, and I have previous experience with 4 years of violin, plus some basic knowledge of piano and drums.
                       </p>
                     </div>
 
