@@ -40,7 +40,7 @@ function Shoutbox() {
             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
             rows={3}
             className="w-full resize-none bg-transparent outline-none text-shark-sand placeholder-shark-sand/60 px-2 py-1"
-            placeholder="Scrivi un messaggio... (Shift+Enter per andare a capo)"
+            placeholder="Send a message... (Shift+Enter to add a new line)"
           />
         </div>
 
