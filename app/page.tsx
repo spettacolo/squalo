@@ -49,7 +49,7 @@ export default function HomePage() {
                     {/* full text on md+ */}
                     <div className="hidden md:block">
                       <p className="text-shark-sand mt-2">
-                      I'm a <b>developer</b> who wears many hats, always eager to learn and build. <br />While my main gig is <b>programming</b> — <span className="notes"><i>crafting code and developing applications</i></span> — I also have a keen eye for detail, which I exercise through <b>image editing</b>. <br />And when I need to unwind, you can bet I'm <i>listening to music</i> of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the <b>guitar</b>, and I have previous experience with 4 years of <b>violin</b>, plus some basic knowledge of <span className="notes"><i>piano</i></span> and <span className="notes"><i>drums</i></span>.
+                      I'm a <span className="keys"><b>developer</b></span> who wears many hats, always eager to learn and build. <br />While my main gig is <b>programming</b> — <span className="notes"><i>crafting code and developing applications</i></span> — I also have a keen eye for detail, which I exercise through <b>image editing</b>. <br />And when I need to unwind, you can bet I'm <i>listening to music</i> of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the <b>guitar</b>, and I have previous experience with 4 years of <b>violin</b>, plus some basic knowledge of <span className="notes"><i>piano</i></span> and <span className="notes"><i>drums</i></span>.
                       </p>
                     </div>
 
