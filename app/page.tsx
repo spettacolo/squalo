@@ -117,7 +117,16 @@ export default function HomePage() {
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                 <h3 className="text-xl font-semibold">Skills</h3>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {['React','Next.js','TypeScript','Tailwind','Framer Motion','Testing'].map((s) => (
+                  {['Python','Java','JavaScript','NodeJS','Golang','Rust','PostgreSQL'].map((s) => (
+                    <span key={s} className="px-3 py-1 rounded-full bg-shark-light/8 text-sm">{s}</span>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+                <h3 className="text-xl font-semibold">Learning</h3>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {['React','Next.js','TypeScript','Tailwind','AI/ML'].map((s) => (
                     <span key={s} className="px-3 py-1 rounded-full bg-shark-light/8 text-sm">{s}</span>
                   ))}
                 </div>
