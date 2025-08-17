@@ -66,7 +66,7 @@ export default function HomePage() {
                             overflow: 'hidden',
                           }}
                         >
-                          I'm a developer who wears many hats, always eager to learn and build. While my main gig is programming — crafting code and developing applications — I also have a keen eye for detail, which I exercise through image editing. And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the guitar, and I have previous experience with 4 years of violin, plus some basic knowledge of piano and drums.
+                          I'm a <span className="keys"><b>developer</b></span> who wears many hats, always eager to learn and build. <br />While my main gig is <span className="keys"><b>programming</b></span> — <span className="notes"><i>crafting code and developing applications</i></span> — I also have a keen eye for detail, which I exercise through <span className="keys"><b>image editing</b></span>. <br />And when I need to unwind, you can bet I'm <i>listening to music</i> of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the <span className="keys"><b>guitar</b></span>, and I have previous experience with 4 years of <span className="keys"><b>violin</b></span>, plus some basic knowledge of <span className="notes"><i>piano</i></span> and <span className="notes"><i>drums</i></span>.
                         </div>
 
                         <span className="text-sm text-sky-300 mt-1 inline-block collapsed">more . . .</span>
@@ -74,7 +74,7 @@ export default function HomePage() {
 
                       <div className="mt-2 expanded">
                         <p className="text-shark-sand">
-                          I'm a developer who wears many hats, always eager to learn and build. While my main gig is programming — crafting code and developing applications — I also have a keen eye for detail, which I exercise through image editing. And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the guitar, and I have previous experience with 4 years of violin, plus some basic knowledge of piano and drums.
+                          I'm a <span className="keys"><b>developer</b></span> who wears many hats, always eager to learn and build. <br />While my main gig is <span className="keys"><b>programming</b></span> — <span className="notes"><i>crafting code and developing applications</i></span> — I also have a keen eye for detail, which I exercise through <span className="keys"><b>image editing</b></span>. <br />And when I need to unwind, you can bet I'm <i>listening to music</i> of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the <span className="keys"><b>guitar</b></span>, and I have previous experience with 4 years of <span className="keys"><b>violin</b></span>, plus some basic knowledge of <span className="notes"><i>piano</i></span> and <span className="notes"><i>drums</i></span>.
                         </p>
 
                         <button
