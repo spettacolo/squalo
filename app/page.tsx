@@ -45,7 +45,52 @@ export default function HomePage() {
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
                 <div className="rounded-md bg-shark-light/5 p-6">
                   <h2 className="text-2xl font-semibold">About</h2>
-                  <p className="text-shark-sand mt-2">I'm a developer who wears many hats, always eager to learn and build. While my main gig is programming—crafting code and developing applications—I also have a keen eye for detail, which I exercise through image editing. And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the guitar, and I have previous experience with 4 years of violin, plus some basic knowledge of piano and drums.</p>
+                    <div>
+                    {/* full text on md+ */}
+                    <div className="hidden md:block">
+                      <p className="text-shark-sand mt-2">
+                      I'm a developer who wears many hats, always eager to learn and build. While my main gig is programming—crafting code and developing applications—I also have a keen eye for detail, which I exercise through image editing. And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the guitar, and I have previous experience with 4 years of violin, plus some basic knowledge of piano and drums.
+                      </p>
+                    </div>
+
+                    {/* collapsible preview on small screens */}
+                    <div className="md:hidden">
+                      <details className="group">
+                      <summary className="list-none cursor-pointer">
+                        <div
+                        className="text-shark-sand mt-2"
+                        style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        }}
+                        >
+                        I'm a developer who wears many hats, always eager to learn and build. While my main gig is programming—crafting code and developing applications—I also have a keen eye for detail, which I exercise through image editing. And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the guitar, and I have previous experience with 4 years of violin, plus some basic knowledge of piano and drums.
+                        </div>
+
+                        <span className="text-sm text-sky-300 mt-1 inline-block group-open:hidden">more . . .</span>
+                      </summary>
+
+                      <div className="mt-2">
+                        <p className="text-shark-sand">
+                        I'm a developer who wears many hats, always eager to learn and build. While my main gig is programming—crafting code and developing applications—I also have a keen eye for detail, which I exercise through image editing. And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the guitar, and I have previous experience with 4 years of violin, plus some basic knowledge of piano and drums.
+                        </p>
+
+                        <button
+                        type="button"
+                        className="mt-2 text-sm text-sky-300"
+                        onClick={(e) => {
+                          const details = (e.currentTarget.closest('details') as HTMLDetailsElement | null);
+                          if (details) details.open = false;
+                        }}
+                        >
+                        less
+                        </button>
+                      </div>
+                      </details>
+                    </div>
+                    </div>
                 </div>
               </motion.div>
 
