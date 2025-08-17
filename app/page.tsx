@@ -57,36 +57,41 @@ export default function HomePage() {
                     <div className="md:hidden">
                       <details className="group">
                       <summary className="list-none cursor-pointer">
-                      <div
-                      className="text-shark-sand mt-2 group-open:hidden"
-                      style={{
-                        display: '-webkit-box',
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                      }}
-                      >
-                      I'm a developer who wears many hats, always eager to learn and build. While my main gig is programming—crafting code and developing applications—I also have a keen eye for detail, which I exercise through image editing. And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the guitar, and I have previous experience with 4 years of violin, plus some basic knowledge of piano and drums.
-                      </div>
+                        <div
+                          className="text-shark-sand mt-2 collapsed"
+                          style={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          I'm a developer who wears many hats, always eager to learn and build. While my main gig is programming—crafting code and developing applications—I also have a keen eye for detail, which I exercise through image editing. And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the guitar, and I have previous experience with 4 years of violin, plus some basic knowledge of piano and drums.
+                        </div>
 
-                      <span className="text-sm text-sky-300 mt-1 inline-block group-open:hidden">more . . .</span>
+                        <span className="text-sm text-sky-300 mt-1 inline-block collapsed">more . . .</span>
                       </summary>
 
-                      <div className="mt-2">
-                      <p className="text-shark-sand">
-                      I'm a developer who wears many hats, always eager to learn and build. While my main gig is programming—crafting code and developing applications—I also have a keen eye for detail, which I exercise through image editing. And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the guitar, and I have previous experience with 4 years of violin, plus some basic knowledge of piano and drums.
-                      </p>
+                      <div className="mt-2 expanded">
+                        <p className="text-shark-sand">
+                          I'm a developer who wears many hats, always eager to learn and build. While my main gig is programming—crafting code and developing applications—I also have a keen eye for detail, which I exercise through image editing. And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the guitar, and I have previous experience with 4 years of violin, plus some basic knowledge of piano and drums.
+                        </p>
 
-                      <button
-                      type="button"
-                      className="mt-2 text-sm text-sky-300"
-                      onClick={(e) => {
-                        const details = (e.currentTarget.closest('details') as HTMLDetailsElement | null);
-                        if (details) details.open = false;
-                      }}
-                      >
-                      less
-                      </button>
+                        <button
+                          type="button"
+                          className="mt-2 text-sm text-sky-300"
+                          onClick={(e) => {
+                            const details = (e.currentTarget.closest("details") as HTMLDetailsElement | null);
+                            if (details) details.open = false;
+                          }}
+                        >
+                          less
+                        </button>
+
+                        <style>{`
+                          details[open] .collapsed { display: none; }
+                          details:not([open]) .expanded { display: none; }
+                        `}</style>
                       </div>
                       </details>
                     </div>
