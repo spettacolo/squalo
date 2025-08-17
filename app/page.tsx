@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Github, Mail, MoreHorizontal } from "lucide-react";
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +15,82 @@ import ParticleBackground from "@/components/ui/particle-background";
 import Donations from "@/components/ui/donations";
 
 const BG_URL = "/squalo_bg.svg";
+
+function Shoutbox() {
+  const [text, setText] = useState("");
+  const [messages, setMessages] = useState<string[]>([]);
+
+  function send() {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    setMessages((m) => [trimmed, ...m].slice(0, 20)); // keep last 20
+    setText("");
+  }
+
+  return (
+    <div className="mt-3">
+      <div className="flex flex-col sm:flex-row gap-3 items-center">
+        <div
+          className="flex-1 rounded-lg bg-shark-mid/30 backdrop-blur-sm ring-1 ring-shark-light/10 p-2"
+          style={{ boxShadow: 'inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02)' }}
+        >
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
+            rows={3}
+            className="w-full resize-none bg-transparent outline-none text-shark-sand placeholder-shark-sand/60 px-2 py-1"
+            placeholder="Scrivi un messaggio... (Shift+Enter per andare a capo)"
+          />
+        </div>
+
+        <div className="flex-shrink-0">
+          <button
+            type="button"
+            onClick={send}
+            aria-label="Invia"
+            className="shout-send flex items-center justify-center w-12 h-12 rounded-lg text-white"
+          >
+            <img src="/send.svg" alt="Invia" className="w-6 h-6" draggable={false} onDragStart={(e: React.DragEvent<HTMLImageElement>) => e.preventDefault()} />
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-3 max-h-48 overflow-auto space-y-2">
+        {messages.length === 0 ? (
+          <div className="text-sm text-shark-sand/60">Nessun messaggio ancora.</div>
+        ) : (
+          messages.map((m, i) => (
+            <div key={i} className="text-sm rounded-md bg-shark-light/5 px-3 py-2 text-shark-sand">
+              {m}
+            </div>
+          ))
+        )}
+      </div>
+      <style>{`
+        .shout-send {
+          background: rgba(56,189,248,0.08); /* soft sky tint */
+          border: 1px solid rgba(255,255,255,0.06);
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
+          /* subtle outer shadow + small inner highlight to look 'attached' */
+          box-shadow: 0 2px 6px rgba(2,6,23,0.45), inset 0 1px 0 rgba(255,255,255,0.03);
+          transform: translateY(0);
+          transition: box-shadow .12s ease, background .12s ease, transform .08s ease;
+          z-index: 20;
+        }
+
+        /* on press invert the bevel to give pressed effect */
+        .shout-send:active {
+          box-shadow: inset 0 2px 8px rgba(2,6,23,0.65), inset 0 -1px 4px rgba(255,255,255,0.02);
+          background: rgba(56,189,248,0.10);
+        }
+
+        .shout-send img { filter: drop-shadow(0 1px 1px rgba(0,0,0,0.35)); }
+      `}</style>
+    </div>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -49,7 +126,7 @@ export default function HomePage() {
                     {/* full text on md+ */}
                     <div className="hidden md:block">
                       <p className="text-shark-sand mt-2">
-                      I'm a <span className="keys"><b>developer</b></span> who wears many hats, always eager to learn and build. <br />While my main gig is <span className="keys"><b>programming</b></span> — <span className="notes"><i>crafting code and developing applications</i></span> — I also have a keen eye for detail, which I exercise through <span className="keys"><b>image editing</b></span>. <br />And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the <span className="keys"><b>guitar</b></span>, and I have previous experience with 4 years of <span className="keys"><b>violin</b></span>, plus some basic knowledge of <span className="notes"><i>piano</i></span> and <span className="notes"><i>drums</i></span>.
+                      I'm a <span className="keys"><b>developer</b></span> who wears many hats, always eager to learn and build. <br />While my main gig is <span className="keys"><b>programming</b></span> — <span className="notes"><i>crafting code and developing applications</i></span> — I also have a keen eye for detail, which I exercise through <span className="keys"><b>image editing</b></span>. <br />And when I need to unwind, you can bet I'm listening to music   of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the <span className="keys"><b>guitar</b></span>, and I have previous experience with 4 years of <span className="keys"><b>violin</b></span>, plus some basic knowledge of <span className="notes"><i>piano</i></span> and <span className="notes"><i>drums</i></span>.
                       </p>
                     </div>
 
@@ -66,7 +143,7 @@ export default function HomePage() {
                             overflow: 'hidden',
                           }}
                         >
-                          I'm a <span className="keys"><b>developer</b></span> who wears many hats, always eager to learn and build. <br /><br />While my main gig is <span className="keys"><b>programming</b></span> — <span className="notes"><i>crafting code and developing applications</i></span> — I also have a keen eye for detail, which I exercise through <span className="keys"><b>image editing</b></span>. <br /><br />And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the <span className="keys"><b>guitar</b></span>, and I have previous experience with 4 years of <span className="keys"><b>violin</b></span>, plus some basic knowledge of <span className="notes"><i>piano</i></span> and <span className="notes"><i>drums</i></span>.
+                          I'm a <span className="keys"><b>developer</b></span> who wears many hats, always eager to learn and build. <br /><br />While my main gig is <span className="keys"><b>programming</b></span> — <span className="notes"><i>crafting code and developing applications</i></span> — I also have a keen eye for detail, which I exercise through <span className="keys"><b>image editing</b></span>. <br /><br />And when I need to unwind, you can bet I'm listening to music   of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the <span className="keys"><b>guitar</b></span>, and I have previous experience with 4 years of <span className="keys"><b>violin</b></span>, plus some basic knowledge of <span className="notes"><i>piano</i></span> and <span className="notes"><i>drums</i></span>.
                         </div>
 
                         <span className="text-sm text-sky-300 mt-1 inline-block collapsed">more . . .</span>
@@ -74,7 +151,7 @@ export default function HomePage() {
 
                       <div className="mt-2 expanded">
                         <p className="text-shark-sand">
-                          I'm a <span className="keys"><b>developer</b></span> who wears many hats, always eager to learn and build. <br /><br />While my main gig is <span className="keys"><b>programming</b></span> — <span className="notes"><i>crafting code and developing applications</i></span> — I also have a keen eye for detail, which I exercise through <span className="keys"><b>image editing</b></span>. <br /><br />And when I need to unwind, you can bet I'm listening to music of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the <span className="keys"><b>guitar</b></span>, and I have previous experience with 4 years of <span className="keys"><b>violin</b></span>, plus some basic knowledge of <span className="notes"><i>piano</i></span> and <span className="notes"><i>drums</i></span>.
+                          I'm a <span className="keys"><b>developer</b></span> who wears many hats, always eager to learn and build. <br /><br />While my main gig is <span className="keys"><b>programming</b></span> — <span className="notes"><i>crafting code and developing applications</i></span> — I also have a keen eye for detail, which I exercise through <span className="keys"><b>image editing</b></span>. <br /><br />And when I need to unwind, you can bet I'm listening to music   of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the <span className="keys"><b>guitar</b></span>, and I have previous experience with 4 years of <span className="keys"><b>violin</b></span>, plus some basic knowledge of <span className="notes"><i>piano</i></span> and <span className="notes"><i>drums</i></span>.
                         </p>
 
                         <button
@@ -134,10 +211,8 @@ export default function HomePage() {
 
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
                 <h3 className="text-xl font-semibold">Contact Me</h3>
-                {/* TODO: farlo diventare una chat */}
-                <div className="mt-3">
-                  <div className="h-10 w-full rounded bg-shark-light/6 flex items-center px-3">email@esempio.com (placeholder)</div>
-                </div>
+                {/* shoutbox: local state only, glass inset style */}
+                <Shoutbox />
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="mt-4">
@@ -171,9 +246,9 @@ export default function HomePage() {
                   <Mail className="w-7 h-7" />
                 </a>
 
-                <a href="/" aria-label="Altro" className="mt-2 p-2 rounded-full bg-shark-light/10 flex items-center justify-center">
+                {/*<a href="/" aria-label="Altro" className="mt-2 p-2 rounded-full bg-shark-light/10 flex items-center justify-center">
                   <MoreHorizontal className="w-7 h-7" />
-                </a>
+                </a>*/}
               </div>
 
               {/* mobile horizontal row (bottom-center) */}
