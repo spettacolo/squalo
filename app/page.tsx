@@ -45,7 +45,7 @@ export default function HomePage() {
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
                 <div className="rounded-md bg-shark-light/5 p-6">
                   {/*<h2 className="text-2xl font-semibold">About</h2>*/}
-                  <div>
+                  {/*<div>*/}
                     {/* full text on md+ */}
                     <div className="hidden md:block">
                       <p className="text-shark-sand mt-2">
@@ -99,7 +99,7 @@ export default function HomePage() {
                       </div>
                       </details>
                     </div>
-                  </div>
+                  {/*</div>*/}
                 </div>
               </motion.div>
 
