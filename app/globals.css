@@ -218,3 +218,7 @@ html, body, #__next {
     transform: translateX(0);
   }
 }
+
+.notes {
+  color: #c1c2c4ff;
+}
