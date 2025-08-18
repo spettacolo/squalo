@@ -179,6 +179,28 @@ export default function SpotifyNowPlaying() {
               lyrics.map((ln: any, i: number) => {
                 const text = typeof ln === 'string' ? ln : (ln?.text ?? '');
                 const isCurrent = i === currentLyricIndex;
+                // if timestamped lyrics (objects with start_ms) try progressive word reveal for current line
+                if (isCurrent && typeof ln !== 'string' && typeof ln.start_ms === 'number') {
+                  const start = ln.start_ms;
+                  const nextStart = (lyrics[i + 1]?.start_ms) ?? (duration || 180000);
+                  const lineDuration = Math.max(300, nextStart - start);
+                  const elapsed = Math.max(0, progress - start);
+                  const frac = Math.min(1, elapsed / lineDuration);
+                  const words = text.split(/\s+/).filter(Boolean);
+                  const visibleCount = Math.floor(frac * words.length);
+                  return (
+                    <div
+                      key={i}
+                      ref={(el) => { if (isCurrent) currentLineRef.current = el as HTMLDivElement; }}
+                      className={`py-1 text-sm transition-colors duration-150 text-white font-semibold`}
+                      style={{ opacity: 1 }}>
+                      {words.map((w, wi) => (
+                        <span key={wi} className={`inline-block mr-1 ${wi <= visibleCount - 1 ? 'text-white' : 'text-white/30'}`} style={{ transition: 'color 160ms linear' }}>{w}</span>
+                      ))}
+                    </div>
+                  );
+                }
+
                 return (
                   <div
                     key={i}
