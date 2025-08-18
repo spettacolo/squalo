@@ -123,17 +123,17 @@ export default function SpotifyNowPlaying() {
   const pct = duration > 0 ? Math.min(1, progress / duration) : 0;
 
   return (
-    <div className="spotify-player max-w-full rounded-lg overflow-hidden bg-gradient-to-r from-[#3b2a3b]/40 via-[#5b2a2a]/20 to-[#2a2a4b]/40 p-4 text-white">
+    <div className="spotify-player max-w-full rounded-2xl overflow-hidden p-6 text-white" style={{ background: 'linear-gradient(90deg, rgba(80,130,220,0.12), rgba(70,80,140,0.12))', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.03)' }}>
       {/* <h4 className="text-lg font-bold mb-2">currently playing</h4> */}
-  <div className="flex items-start gap-4">
+  <div className="flex items-start gap-6">
         {albumArt ? (
-          <img src={albumArt} alt={item.album?.name || 'album art'} className="w-20 h-20 rounded-md object-cover" />
+          <img src={albumArt} alt={item.album?.name || 'album art'} className="w-24 h-24 rounded-lg object-cover shadow-lg" />
         ) : (
-          <div className="w-20 h-20 rounded-md bg-neutral-800" />
+          <div className="w-24 h-24 rounded-lg bg-neutral-800" />
         )}
 
   <div className="flex-1 min-w-0">
-          <div className="marquee text-xl font-semibold whitespace-nowrap overflow-hidden">
+          <div className="marquee text-2xl font-extrabold tracking-wider whitespace-nowrap overflow-hidden" style={{ fontFamily: 'ui-monospace, monospace' }}>
             <div className="marquee-inner inline-block">
               {title} — {artists}
             </div>
@@ -141,11 +141,18 @@ export default function SpotifyNowPlaying() {
 
           <div className="text-sm text-gray-300 mt-1">by {artists}</div>
 
-          <div className="mt-3">
-            <div className="w-full h-2 bg-white/12 rounded-full overflow-hidden">
-              <div className="h-2 bg-white rounded-full" style={{ width: `${pct * 100}%`, transition: 'width 0.2s linear' }} />
+          <div className="mt-4 relative">
+            <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden relative" style={{ boxShadow: 'inset 0 0 12px rgba(0,0,0,0.25)' }}>
+              <div className="h-3 bg-white rounded-full" style={{ width: `${pct * 100}%`, transition: 'width 0.2s linear' }} />
+              {/* centered pause/play icon placeholder */}
+              <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+                <div className="w-6 h-6 bg-white/6 rounded-full flex items-center justify-center">
+                  <div className="w-2 h-3 bg-white rounded-sm" style={{ marginRight: 4 }} />
+                  <div className="w-2 h-3 bg-white rounded-sm" />
+                </div>
+              </div>
             </div>
-            <div className="flex justify-between text-xs text-gray-200 mt-1">
+            <div className="flex justify-between text-xs text-gray-200 mt-2">
               <span>{msToTime(progress)}</span>
               <span>{msToTime(duration)}</span>
             </div>
@@ -164,8 +171,8 @@ export default function SpotifyNowPlaying() {
 
           <div
             ref={lyricsContainerRef}
-            className="overflow-y-auto h-40 rounded-lg"
-            style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04))', padding: '0.6rem' }}>
+            className="overflow-y-auto h-40 rounded-lg lyrics-container"
+            style={{ padding: '0.6rem', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.02)' }}>
             {(!lyrics || lyrics.length === 0) ? (
               <div className="text-xs text-white/40">No lyrics available.</div>
             ) : (
