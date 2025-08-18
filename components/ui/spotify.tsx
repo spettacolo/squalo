@@ -113,17 +113,18 @@ export default function SpotifyNowPlaying() {
 
         /* effetto in rilievo (emboss) applicato al container spotify - FORZA solo inset, sovrascrive eventuali ombre esterne */
         .spotify-player {
-          /* effetto in rilievo più marcato usando solo ombre interne (inset) su più layer */
+          /* effetto in rilievo più marcato usando ombre interne (inset) su più layer
+             + un alone esterno molto morbido per profondità (subtle) */
           -webkit-box-shadow:
             inset 10px 10px 20px rgba(0,0,0,0.6) !important,
             inset -8px -8px 18px rgba(255,255,255,0.06) !important,
-            inset 0 1px 0 rgba(255,255,255,0.02) !important;
+            inset 0 1px 0 rgba(255,255,255,0.02) !important,
+            0 6px 22px rgba(2,6,23,0.18) !important;
           box-shadow:
             inset 10px 10px 20px rgba(0,0,0,0.6) !important,
             inset -8px -8px 18px rgba(255,255,255,0.06) !important,
-            inset 0 1px 0 rgba(255,255,255,0.02) !important;
-          /* assicurati che non ci siano filtri che aggiungono ombre esterne */
-          filter: none !important;
+            inset 0 1px 0 rgba(255,255,255,0.02) !important,
+            0 6px 22px rgba(2,6,23,0.18) !important;
           border-radius: 0.5rem;
           border: 1px solid rgba(255,255,255,0.04);
           backdrop-filter: blur(2px) saturate(110%);
