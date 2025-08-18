@@ -113,10 +113,16 @@ export default function SpotifyNowPlaying() {
 
         /* effetto in rilievo (emboss) applicato al container spotify - FORZA solo inset, sovrascrive eventuali ombre esterne */
         .spotify-player {
-          /* rimuoviamo qualsiasi ombra esterna ereditata e applichiamo solo ombre inset; usare !important per sovrascrivere altre regole */
-          -webkit-box-shadow: inset 6px 6px 12px rgba(0,0,0,0.45) !important, inset -6px -6px 12px rgba(255,255,255,0.03) !important;
-          box-shadow: inset 6px 6px 12px rgba(0,0,0,0.45) !important, inset -6px -6px 12px rgba(255,255,255,0.03) !important;
-          /* assicuriamoci che non ci siano filtri che generano ombre esterne */
+          /* effetto in rilievo più marcato usando solo ombre interne (inset) su più layer */
+          -webkit-box-shadow:
+            inset 10px 10px 20px rgba(0,0,0,0.6) !important,
+            inset -8px -8px 18px rgba(255,255,255,0.06) !important,
+            inset 0 1px 0 rgba(255,255,255,0.02) !important;
+          box-shadow:
+            inset 10px 10px 20px rgba(0,0,0,0.6) !important,
+            inset -8px -8px 18px rgba(255,255,255,0.06) !important,
+            inset 0 1px 0 rgba(255,255,255,0.02) !important;
+          /* assicurati che non ci siano filtri che aggiungono ombre esterne */
           filter: none !important;
           border-radius: 0.5rem;
           border: 1px solid rgba(255,255,255,0.04);
@@ -124,6 +130,7 @@ export default function SpotifyNowPlaying() {
           -webkit-backdrop-filter: blur(2px) saturate(110%);
           position: relative;
           z-index: 0;
+          background-clip: padding-box; /* evita che il bordo mostri strisce dovute a inset */
         }
       `}</style>
     </div>
