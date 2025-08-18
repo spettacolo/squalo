@@ -76,7 +76,10 @@ export default function SpotifyNowPlaying() {
   const pct = duration > 0 ? Math.min(1, progress / duration) : 0;
 
   return (
-    <div className="spotify-player max-w-full rounded-lg overflow-hidden bg-gradient-to-r from-[#3b2a3b]/40 via-[#5b2a2a]/20 to-[#2a2a4b]/40 p-4 text-white">
+    <div
+      className="spotify-player max-w-full rounded-lg overflow-hidden bg-shark-mid/30 backdrop-blur-sm ring-1 ring-shark-light/10 p-2 text-white"
+      style={{ boxShadow: 'inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02)' }}
+    >
       {/* <h4 className="text-lg font-bold mb-2">currently playing</h4> */}
       <div className="flex items-center gap-4">
         {albumArt ? (
@@ -110,21 +113,6 @@ export default function SpotifyNowPlaying() {
         .marquee { height: 1.4em; }
         .marquee-inner { padding-left: 100%; animation: marquee 12s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
-
-        /* effetto in rilievo (emboss) applicato al container spotify - FORZA solo inset, sovrascrive eventuali ombre esterne */
-        /* sottile specular highlight per dare più rilievo (non influisce su click) */
-        .spotify-player {
-          /* copia esatta dello stile interno del shoutbox: solo inset shadows per rilievo */
-          -webkit-box-shadow: inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02);
-          box-shadow: inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02);
-          border-radius: 0.5rem;
-          border: 1px solid rgba(255,255,255,0.04);
-          backdrop-filter: blur(6px);
-          -webkit-backdrop-filter: blur(6px);
-          position: relative;
-          z-index: 1;
-          background-clip: padding-box;
-        }
       `}</style>
     </div>
   );
