@@ -11,7 +11,7 @@ const DEFAULTS: Entry[] = [
   { key: "eth", label: "eth", address: "0x00000000...9f39", full: "0x00000000ddca05d85b4dcffcea97567880989f39" },
   { key: "trx", label: "trx", address: "TRUEmbByAT...WP77", full: "TRUEmbByAT3Xv1eXhET6TtpQK2JzUvWP77" },
   { key: "sol", label: "sol", address: "god2M9qTYe...M5ci", full: "god2M9qTYeJerPk6ASTabqkQPQgjSrJ13PbtAD2M5ci" },
-  { key: "cryptobot", label: "cryptobot", address: "click", href: "https://t.me/send?start=referral", full: "https://t.me/send?start=referral" },
+  { key: "paypal", label: "paypal", address: "click", href: "https://paypal.me/", full: "https://paypal.me/" },
 ];
 
 export default function Donations({ entries = DEFAULTS }: { entries?: Entry[] }) {
