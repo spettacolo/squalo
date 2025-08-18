@@ -93,6 +93,7 @@ export async function GET() {
 
     // fetch profile to confirm which user the token is for (helps debug wrong account)
     let profile: any = null;
+    let devices: any[] | null = null;
     try {
       const p = await fetch('https://api.spotify.com/v1/me', {
         method: 'GET',
@@ -102,6 +103,21 @@ export async function GET() {
       if (p.ok) profile = await p.json();
     } catch (e) {
       // ignore profile errors
+    }
+
+    // fetch devices to help debug why /player/currently-playing reports nothing
+    try {
+      const d = await fetch('https://api.spotify.com/v1/me/player/devices', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+        cache: 'no-store',
+      });
+      if (d.ok) {
+        const dd = await d.json();
+        devices = Array.isArray(dd.devices) ? dd.devices : (dd.devices || null);
+      }
+    } catch (e) {
+      // ignore devices errors
     }
 
     const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
