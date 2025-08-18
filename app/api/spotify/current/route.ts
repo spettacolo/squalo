@@ -1,6 +1,29 @@
 import { NextResponse } from 'next/server';
+import fs from 'fs/promises';
+import path from 'path';
 
 let cachedToken: { access_token: string; expires_at: number } | null = null;
+
+const TOKEN_FILE = path.join(process.cwd(), '.spotify_token.json');
+
+async function loadTokenFromFile() {
+  try {
+    const txt = await fs.readFile(TOKEN_FILE, 'utf8');
+    const json = JSON.parse(txt);
+    return json as { access_token: string; expires_at: number };
+  } catch (e) {
+    return null;
+  }
+}
+
+async function saveTokenToFile(tokenObj: { access_token: string; expires_at: number }) {
+  try {
+    await fs.writeFile(TOKEN_FILE, JSON.stringify(tokenObj), { mode: 0o600 });
+  } catch (e) {
+    // ignore file write errors (e.g., read-only FS on some hosts)
+    console.warn('Could not write token file', e);
+  }
+}
 
 async function fetchAccessTokenClientCredentials(clientId: string, clientSecret: string) {
   const body = new URLSearchParams();
@@ -37,10 +60,22 @@ async function fetchAccessTokenRefresh(refreshToken: string, clientId: string, c
   return json as { access_token: string; token_type: string; expires_in: number; refresh_token?: string };
 }
 
+// Se vuoi usare temporaneamente un token hard-coded, impostalo qui; altrimenti il token verrà
+// recuperato automaticamente dal refresh token / client_credentials e salvato su disco.
+// Nota: su hosting serverless (es. Vercel) la scrittura su disco può non persistere tra esecuzioni.
+const ACCESS_TOKEN = '<INSERISCI_IL_TUO_TOKEN_SPOTIFY_QUI>';
+
 async function getAccessToken() {
-  // prefer explicit long-lived token if provided
-  const explicit = process.env.SPOTIFY_ACCESS_TOKEN;
-  if (explicit) return explicit;
+  // 1) prefer token dal file di cache
+  const fileTok = await loadTokenFromFile();
+  const now = Date.now();
+  if (fileTok && fileTok.expires_at > now + 5000) {
+    cachedToken = fileTok;
+    return fileTok.access_token;
+  }
+
+  // 2) fallback: explicit hard-coded token
+  if (ACCESS_TOKEN && !ACCESS_TOKEN.includes('<INSERISCI')) return ACCESS_TOKEN;
 
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
@@ -50,27 +85,30 @@ async function getAccessToken() {
     return null;
   }
 
-  // cached token still valid?
-  const now = Date.now();
+  // 3) cached in-memory?
   if (cachedToken && cachedToken.expires_at > now + 5000) {
     return cachedToken.access_token;
   }
 
-  // prefer user-refresh flow if we have a refresh token (gives user-scoped access)
+  // 4) prefer user-refresh flow if we have a refresh token (gives user-scoped access)
   if (refreshToken) {
     try {
       const tok = await fetchAccessTokenRefresh(refreshToken, clientId, clientSecret);
-      cachedToken = { access_token: tok.access_token, expires_at: now + tok.expires_in * 1000 };
+      const expires_at = now + tok.expires_in * 1000;
+      cachedToken = { access_token: tok.access_token, expires_at };
+      // save to file for persistence between restarts
+      await saveTokenToFile(cachedToken);
       return tok.access_token;
     } catch (e) {
-      // fall back to client_credentials if refresh fails
       console.warn('refresh token flow failed, falling back to client_credentials', e);
     }
   }
 
-  // fallback: client_credentials (note: not user-scoped)
+  // 5) fallback: client_credentials (note: not user-scoped)
   const tok = await fetchAccessTokenClientCredentials(clientId, clientSecret);
-  cachedToken = { access_token: tok.access_token, expires_at: now + tok.expires_in * 1000 };
+  const expires_at = now + tok.expires_in * 1000;
+  cachedToken = { access_token: tok.access_token, expires_at };
+  await saveTokenToFile(cachedToken);
   return tok.access_token;
 }
 
@@ -78,7 +116,7 @@ export async function GET() {
   try {
     const token = await getAccessToken();
     if (!token) {
-      return NextResponse.json({ error: 'No SPOTIFY_ACCESS_TOKEN or client credentials configured' }, { status: 500 });
+      return NextResponse.json({ error: 'No access token available (set ACCESS_TOKEN or SPOTIFY_CLIENT_ID/SPOTIFY_CLIENT_SECRET)' }, { status: 500 });
     }
 
     const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
