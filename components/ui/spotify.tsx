@@ -13,6 +13,8 @@ export default function SpotifyNowPlaying() {
   const [currentLyricIndex, setCurrentLyricIndex] = useState(0);
   const lyricsContainerRef = useRef<HTMLDivElement | null>(null);
   const currentLineRef = useRef<HTMLDivElement | null>(null);
+  const [lastData, setLastData] = useState<any | null>(null);
+  const lastSeenRef = useRef<number>(0);
   const intervalRef = useRef<number | null>(null);
   const progTickRef = useRef<number | null>(null);
 
@@ -36,11 +38,16 @@ export default function SpotifyNowPlaying() {
       }
       setError(null);
       setData(json);
-  // accept optional lyrics payload: either array of strings or [{start_ms, text}, ...]
+      // accept optional lyrics payload: either array of strings or [{start_ms, text}, ...]
       setLyrics(json?.lyrics ?? null);
       // dev helper: if no lyrics from API, inject sample lines on localhost for preview
       if (!json?.lyrics && typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
         setLyrics(sampleLyrics);
+      }
+      // if the response contains an item, update lastData/lastSeen — otherwise keep lastData for a grace period
+      if (json?.item) {
+        setLastData(json);
+        lastSeenRef.current = Date.now();
       }
       setIsPlaying(!!json?.is_playing);
       setProgress(json?.progress_ms ?? 0);
@@ -60,7 +67,11 @@ export default function SpotifyNowPlaying() {
   // when data changes start/stop per-second progress tick
   useEffect(() => {
     if (progTickRef.current) { window.clearInterval(progTickRef.current); progTickRef.current = null; }
-    if (data && data.is_playing) {
+    // compute effective playing state (consider lastData within a grace window)
+    const KEEP_ALIVE_MS = 8000;
+    const now = Date.now();
+    const effectiveIsPlaying = (data && data.is_playing) || (lastData && (now - lastSeenRef.current) < KEEP_ALIVE_MS && lastData.is_playing);
+    if (effectiveIsPlaying) {
       progTickRef.current = window.setInterval(() => {
         setProgress((p) => p + 1000);
       }, 1000) as unknown as number;
@@ -105,7 +116,12 @@ export default function SpotifyNowPlaying() {
     );
   }
 
-  if (!data || !data.item) {
+  // allow showing last known data for a short grace period so UI doesn't disappear on transient 204/no-item
+  const KEEP_ALIVE_MS = 8000;
+  const now = Date.now();
+  const effectiveData = (data && data.item) ? data : ((lastData && (now - lastSeenRef.current) < KEEP_ALIVE_MS) ? lastData : data);
+
+  if (!effectiveData || !effectiveData.item) {
     return (
       <div className="spotify-player opacity-80 text-sm text-muted">
         {/* <h4 className="text-lg font-bold">currently playing</h4> */}
@@ -114,7 +130,7 @@ export default function SpotifyNowPlaying() {
     );
   }
 
-  const item: SpotifyItem = data.item;
+  const item: SpotifyItem = effectiveData.item;
   const artists = (item.artists || []).map((a: any) => a.name).join(', ');
   const title = item.name || '';
   const albumArt = item.album?.images?.[0]?.url;
