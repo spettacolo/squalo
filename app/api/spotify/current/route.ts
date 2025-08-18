@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 let cachedToken: { access_token: string; expires_at: number } | null = null;
+let lastTokenFlow: 'UNKNOWN' | 'ACCESS_TOKEN' | 'REFRESH' | 'CLIENT_CREDENTIALS' = 'UNKNOWN';
 
 async function fetchAccessTokenClientCredentials(clientId: string, clientSecret: string) {
   const body = new URLSearchParams();
@@ -42,38 +43,22 @@ const ACCESS_TOKEN = '<INSERISCI_IL_TUO_TOKEN_SPOTIFY_QUI>';
 
 async function getAccessToken() {
   // prefer explicit hard-coded token if provided
-  if (ACCESS_TOKEN && !ACCESS_TOKEN.includes('<INSERISCI')) return ACCESS_TOKEN;
+  if (ACCESS_TOKEN && !ACCESS_TOKEN.includes('<INSERISCI')) {
+    lastTokenFlow = 'ACCESS_TOKEN';
+    return ACCESS_TOKEN;
+  }
 
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-  const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
   if (!clientId || !clientSecret) {
     // cannot do any token flow without client credentials
     return null;
   }
 
-  const now = Date.now();
-  // cached in-memory?
-  if (cachedToken && cachedToken.expires_at > now + 5000) {
-    return cachedToken.access_token;
-  }
-
-  // prefer user-refresh flow if we have a refresh token (gives user-scoped access)
-  if (refreshToken) {
-    try {
-      const tok = await fetchAccessTokenRefresh(refreshToken, clientId, clientSecret);
-      const expires_at = now + tok.expires_in * 1000;
-      cachedToken = { access_token: tok.access_token, expires_at };
-      return tok.access_token;
-    } catch (e) {
-      console.warn('refresh token flow failed, falling back to client_credentials', e);
-    }
-  }
-
-  // fallback: client_credentials (note: not user-scoped)
+  // Simple mode: always request a fresh client_credentials token on each invocation
+  // This matches "fetch on page refresh" behaviour the user requested.
   const tok = await fetchAccessTokenClientCredentials(clientId, clientSecret);
-  const expires_at = now + tok.expires_in * 1000;
-  cachedToken = { access_token: tok.access_token, expires_at };
+  lastTokenFlow = 'CLIENT_CREDENTIALS';
   return tok.access_token;
 }
 
@@ -83,6 +68,20 @@ export async function GET(request: Request) {
     const token = await getAccessToken();
     if (!token) {
       return NextResponse.json({ error: 'No access token available (set ACCESS_TOKEN or SPOTIFY_CLIENT_ID/SPOTIFY_CLIENT_SECRET)' }, { status: 500 });
+    }
+
+    // If we only have a client_credentials token, /me endpoints won't work because
+    // client_credentials tokens are not user-scoped. Provide an explanatory error.
+    if (lastTokenFlow === 'CLIENT_CREDENTIALS' && !(ACCESS_TOKEN && !ACCESS_TOKEN.includes('<INSERISCI'))) {
+      return NextResponse.json({
+        error: 'client_credentials token cannot access /me endpoints',
+        help: 'This API requires a user-scoped access token. Obtain an Authorization Code refresh token and set SPOTIFY_REFRESH_TOKEN as an env var on Vercel. See _instructions in response.',
+        instructions: {
+          step1: 'Visit the Spotify authorization URL in a browser to get a code (response_type=code, scope=user-read-currently-playing user-read-playback-state).',
+          step2: 'Exchange the code for tokens by POSTing to https://accounts.spotify.com/api/token (use Basic auth with client_id:client_secret).',
+          step3: 'Set the returned refresh_token as SPOTIFY_REFRESH_TOKEN on Vercel (Project Settings → Environment Variables) and redeploy.'
+        }
+      }, { status: 400 });
     }
 
     const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
