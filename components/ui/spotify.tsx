@@ -111,15 +111,19 @@ export default function SpotifyNowPlaying() {
         .marquee-inner { padding-left: 100%; animation: marquee 12s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
 
-        /* effetto in rilievo (emboss) applicato al container spotify - solo inset, senza ombra esterna */
+        /* effetto in rilievo (emboss) applicato al container spotify - FORZA solo inset, sovrascrive eventuali ombre esterne */
         .spotify-player {
-          /* solo ombre interne per rilievo */
-          box-shadow:
-            inset 6px 6px 12px rgba(0,0,0,0.45),
-            inset -6px -6px 12px rgba(255,255,255,0.03);
+          /* rimuoviamo qualsiasi ombra esterna ereditata e applichiamo solo ombre inset; usare !important per sovrascrivere altre regole */
+          -webkit-box-shadow: inset 6px 6px 12px rgba(0,0,0,0.45) !important, inset -6px -6px 12px rgba(255,255,255,0.03) !important;
+          box-shadow: inset 6px 6px 12px rgba(0,0,0,0.45) !important, inset -6px -6px 12px rgba(255,255,255,0.03) !important;
+          /* assicuriamoci che non ci siano filtri che generano ombre esterne */
+          filter: none !important;
           border-radius: 0.5rem;
           border: 1px solid rgba(255,255,255,0.04);
           backdrop-filter: blur(2px) saturate(110%);
+          -webkit-backdrop-filter: blur(2px) saturate(110%);
+          position: relative;
+          z-index: 0;
         }
       `}</style>
     </div>
