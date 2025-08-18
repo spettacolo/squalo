@@ -3,49 +3,6 @@ import { NextResponse } from 'next/server';
 let cachedToken: { access_token: string; expires_at: number } | null = null;
 let lastTokenFlow: 'REFRESH' | 'CLIENT_CREDENTIALS' | 'ACCESS_TOKEN' | 'NONE' = 'NONE';
 
-// simple in-memory cache for lyrics per Spotify track id
-const lyricsCache: Map<string, { fetchedAt: number; lyrics: any[] }> = new Map();
-
-function parseLrc(lrc: string) {
-  // parse lines like [mm:ss.xx] text
-  const lines: any[] = [];
-  const re = /\[(\d+):(\d+(?:\.\d+)?)\](.*)/;
-  for (const raw of lrc.split(/\r?\n/)) {
-    const m = raw.match(re);
-    if (m) {
-      const mm = parseInt(m[1], 10);
-      const ss = parseFloat(m[2]);
-      const start_ms = Math.round((mm * 60 + ss) * 1000);
-      const text = m[3].trim();
-      if (text) lines.push({ start_ms, text });
-    }
-  }
-  return lines;
-}
-
-async function fetchLyricsFromLyricsOvh(title: string, artists: string, duration_ms: number) {
-  // lyrics.ovh provides plain lyrics text for artist/title
-  try {
-    const q = `${encodeURIComponent(artists.split(',')[0] || '')}/${encodeURIComponent(title)}`;
-    const res = await fetch(`https://api.lyrics.ovh/v1/${artists.split(',')[0] || ''}/${title}`);
-    if (!res.ok) return null;
-    const js = await res.json();
-    const lyricsBody = js?.lyrics;
-    if (!lyricsBody || typeof lyricsBody !== 'string') return null;
-    const lines = lyricsBody.split(/\r?\n/).map((s: string) => s.trim()).filter(Boolean);
-    if (lines.length === 0) return null;
-    const out: any[] = [];
-    for (let i = 0; i < lines.length; i++) {
-      const start = Math.round((i / Math.max(1, lines.length - 1)) * (duration_ms || 180000));
-      out.push({ start_ms: start, text: lines[i] });
-    }
-    return out;
-  } catch (e) {
-    console.warn('lyrics.ovh fetch failed', String(e));
-    return null;
-  }
-}
-
 async function fetchAccessTokenClientCredentials(clientId: string, clientSecret: string) {
   const body = new URLSearchParams();
   body.set('grant_type', 'client_credentials');
@@ -195,39 +152,14 @@ export async function GET() {
       }
       return NextResponse.json(payload, { status: res.status });
     }
-    // optionally try to attach lyrics (timed) to the response if we have a provider key
-    try {
-      const out: any = { ...(body || {}) };
-      const trackId = body?.item?.id ?? body?.item?.track?.id ?? null;
-      const title = body?.item?.name ?? body?.item?.track?.name ?? '';
-      const artists = (body?.item?.artists || body?.item?.track?.artists || []).map((a: any) => a.name).join(', ');
-      const duration = body?.item?.duration_ms ?? body?.item?.track?.duration_ms ?? 0;
-
-      if (trackId) {
-        const cacheKey = `ly:${trackId}`;
-        const cached = lyricsCache.get(cacheKey);
-        if (cached && (Date.now() - cached.fetchedAt) < 1000 * 60 * 60 * 6) { // 6h cache
-          out.lyrics = cached.lyrics;
-        } else {
-          const mm = await fetchLyricsFromLyricsOvh(title, artists, duration);
-          if (mm && mm.length > 0) {
-            lyricsCache.set(cacheKey, { fetchedAt: Date.now(), lyrics: mm });
-            out.lyrics = mm;
-          }
-        }
-      }
-
-      if (debug) {
-        out._debug = { token_flow: lastTokenFlow, profile, devices };
-      }
+    // On success return the raw Spotify body (client expects this shape).
+    if (debug) {
+      // attach debug info without removing original fields
+      const out = { ...(body || {}), _debug: { token_flow: lastTokenFlow, profile, devices } };
       return NextResponse.json(out);
-    } catch (e) {
-      if (debug) {
-        const out = { ...(body || {}), _debug: { token_flow: lastTokenFlow, profile, devices, lyrics_error: String(e) } };
-        return NextResponse.json(out);
-      }
-      return NextResponse.json(body);
     }
+
+    return NextResponse.json(body);
   } catch (err: any) {
     const payload: any = { error: err?.message || 'unexpected error' };
     if (debug) payload._raw = String(err?.stack || err);
