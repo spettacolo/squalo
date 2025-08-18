@@ -1,29 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 
 let cachedToken: { access_token: string; expires_at: number } | null = null;
-
-const TOKEN_FILE = path.join(process.cwd(), '.spotify_token.json');
-
-async function loadTokenFromFile() {
-  try {
-    const txt = await fs.readFile(TOKEN_FILE, 'utf8');
-    const json = JSON.parse(txt);
-    return json as { access_token: string; expires_at: number };
-  } catch (e) {
-    return null;
-  }
-}
-
-async function saveTokenToFile(tokenObj: { access_token: string; expires_at: number }) {
-  try {
-    await fs.writeFile(TOKEN_FILE, JSON.stringify(tokenObj), { mode: 0o600 });
-  } catch (e) {
-    // ignore file write errors (e.g., read-only FS on some hosts)
-    console.warn('Could not write token file', e);
-  }
-}
 
 async function fetchAccessTokenClientCredentials(clientId: string, clientSecret: string) {
   const body = new URLSearchParams();
@@ -66,15 +43,7 @@ async function fetchAccessTokenRefresh(refreshToken: string, clientId: string, c
 const ACCESS_TOKEN = '<INSERISCI_IL_TUO_TOKEN_SPOTIFY_QUI>';
 
 async function getAccessToken() {
-  // 1) prefer token dal file di cache
-  const fileTok = await loadTokenFromFile();
-  const now = Date.now();
-  if (fileTok && fileTok.expires_at > now + 5000) {
-    cachedToken = fileTok;
-    return fileTok.access_token;
-  }
-
-  // 2) fallback: explicit hard-coded token
+  // 1) fallback: explicit hard-coded token
   if (ACCESS_TOKEN && !ACCESS_TOKEN.includes('<INSERISCI')) return ACCESS_TOKEN;
 
   const clientId = process.env.SPOTIFY_CLIENT_ID;
@@ -84,6 +53,8 @@ async function getAccessToken() {
     // cannot do any token flow without client credentials
     return null;
   }
+
+  const now = Date.now();
 
   // 3) cached in-memory?
   if (cachedToken && cachedToken.expires_at > now + 5000) {
@@ -96,8 +67,6 @@ async function getAccessToken() {
       const tok = await fetchAccessTokenRefresh(refreshToken, clientId, clientSecret);
       const expires_at = now + tok.expires_in * 1000;
       cachedToken = { access_token: tok.access_token, expires_at };
-      // save to file for persistence between restarts
-      await saveTokenToFile(cachedToken);
       return tok.access_token;
     } catch (e) {
       console.warn('refresh token flow failed, falling back to client_credentials', e);
@@ -108,7 +77,6 @@ async function getAccessToken() {
   const tok = await fetchAccessTokenClientCredentials(clientId, clientSecret);
   const expires_at = now + tok.expires_in * 1000;
   cachedToken = { access_token: tok.access_token, expires_at };
-  await saveTokenToFile(cachedToken);
   return tok.access_token;
 }
 
