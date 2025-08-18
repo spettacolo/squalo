@@ -194,7 +194,7 @@ export default function SpotifyNowPlaying() {
                       ref={(el) => { if (isCurrent) currentLineRef.current = el as HTMLDivElement; }}
                       className={`py-1 text-sm transition-colors duration-150 text-white font-semibold`}
                       style={{ opacity: 1 }}>
-                      {words.map((w, wi) => (
+                      {words.map((w: string, wi: number) => (
                         <span key={wi} className={`inline-block mr-1 ${wi <= visibleCount - 1 ? 'text-white' : 'text-white/30'}`} style={{ transition: 'color 160ms linear' }}>{w}</span>
                       ))}
                     </div>

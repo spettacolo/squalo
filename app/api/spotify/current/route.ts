@@ -23,58 +23,27 @@ function parseLrc(lrc: string) {
   return lines;
 }
 
-async function fetchLyricsFromMusixmatch(title: string, artists: string, duration_ms: number) {
-  const key = process.env.MUSIXMATCH_API_KEY;
-  if (!key) return null;
+async function fetchLyricsFromLyricsOvh(title: string, artists: string, duration_ms: number) {
+  // lyrics.ovh provides plain lyrics text for artist/title
   try {
-    const base = 'https://api.musixmatch.com/ws/1.1';
-    // search for track (prefer tracks with subtitles/timed lyrics)
-    const qs = new URLSearchParams({ q_track: title, q_artist: artists, f_has_subtitle: '1', apikey: key, s_track_rating: 'desc' });
-    let res = await fetch(`${base}/track.search?${qs.toString()}`);
+    const q = `${encodeURIComponent(artists.split(',')[0] || '')}/${encodeURIComponent(title)}`;
+    const res = await fetch(`https://api.lyrics.ovh/v1/${artists.split(',')[0] || ''}/${title}`);
     if (!res.ok) return null;
     const js = await res.json();
-    const trackList = js?.message?.body?.track_list;
-    let mmTrackId: number | null = null;
-    if (Array.isArray(trackList) && trackList.length > 0) {
-      mmTrackId = trackList[0]?.track?.track_id ?? null;
+    const lyricsBody = js?.lyrics;
+    if (!lyricsBody || typeof lyricsBody !== 'string') return null;
+    const lines = lyricsBody.split(/\r?\n/).map((s: string) => s.trim()).filter(Boolean);
+    if (lines.length === 0) return null;
+    const out: any[] = [];
+    for (let i = 0; i < lines.length; i++) {
+      const start = Math.round((i / Math.max(1, lines.length - 1)) * (duration_ms || 180000));
+      out.push({ start_ms: start, text: lines[i] });
     }
-
-    if (mmTrackId) {
-      // try subtitle (timed) first
-      res = await fetch(`${base}/track.subtitle.get?track_id=${mmTrackId}&apikey=${key}`);
-      if (res.ok) {
-        const sub = await res.json();
-        const body = sub?.message?.body;
-        const subtitle = body?.subtitle;
-        const subBody = subtitle?.subtitle_body;
-        if (subBody && typeof subBody === 'string') {
-          const parsed = parseLrc(subBody);
-          if (parsed.length > 0) return parsed;
-        }
-      }
-
-      // fallback to plain lyrics
-      res = await fetch(`${base}/track.lyrics.get?track_id=${mmTrackId}&apikey=${key}`);
-      if (res.ok) {
-        const l = await res.json();
-        const lyricsBody = l?.message?.body?.lyrics?.lyrics_body;
-        if (lyricsBody && typeof lyricsBody === 'string') {
-          // split into lines and approximate timings by proportion along duration
-          const lines = lyricsBody.split(/\r?\n/).map((s: string) => s.trim()).filter(Boolean);
-          if (lines.length === 0) return null;
-          const out: any[] = [];
-          for (let i = 0; i < lines.length; i++) {
-            const start = Math.round((i / Math.max(1, lines.length - 1)) * (duration_ms || 180000));
-            out.push({ start_ms: start, text: lines[i] });
-          }
-          return out;
-        }
-      }
-    }
+    return out;
   } catch (e) {
-    console.warn('musixmatch lyrics fetch failed', String(e));
+    console.warn('lyrics.ovh fetch failed', String(e));
+    return null;
   }
-  return null;
 }
 
 async function fetchAccessTokenClientCredentials(clientId: string, clientSecret: string) {
@@ -235,12 +204,12 @@ export async function GET() {
       const duration = body?.item?.duration_ms ?? body?.item?.track?.duration_ms ?? 0;
 
       if (trackId) {
-        const cacheKey = `mm:${trackId}`;
+        const cacheKey = `ly:${trackId}`;
         const cached = lyricsCache.get(cacheKey);
         if (cached && (Date.now() - cached.fetchedAt) < 1000 * 60 * 60 * 6) { // 6h cache
           out.lyrics = cached.lyrics;
         } else {
-          const mm = await fetchLyricsFromMusixmatch(title, artists, duration);
+          const mm = await fetchLyricsFromLyricsOvh(title, artists, duration);
           if (mm && mm.length > 0) {
             lyricsCache.set(cacheKey, { fetchedAt: Date.now(), lyrics: mm });
             out.lyrics = mm;
