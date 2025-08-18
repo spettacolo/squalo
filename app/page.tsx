@@ -39,7 +39,7 @@ function Shoutbox() {
             onChange={(e) => setText(e.target.value)}
             rows={3}
             className="w-full resize-none bg-transparent outline-none text-shark-sand placeholder-shark-sand/60 px-2 py-1"
-            placeholder="Send a message... (Shift+Enter to add a new line)"
+            placeholder="Send a message..."
           />
         </div>
 
