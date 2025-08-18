@@ -52,7 +52,7 @@ export default function SpotifyNowPlaying() {
   if (error) {
     return (
       <div className="spotify-player opacity-80 text-sm text-muted">
-        <h4 className="text-lg font-bold">currently playing</h4>
+        {/* <h4 className="text-lg font-bold">currently playing</h4> */}
         <p className="text-xs">{error}</p>
       </div>
     );
@@ -61,7 +61,7 @@ export default function SpotifyNowPlaying() {
   if (!data || !data.item) {
     return (
       <div className="spotify-player opacity-80 text-sm text-muted">
-        <h4 className="text-lg font-bold">currently playing</h4>
+        {/* <h4 className="text-lg font-bold">currently playing</h4> */}
         <p className="text-xs">nothing playing right now.</p>
       </div>
     );
@@ -77,7 +77,7 @@ export default function SpotifyNowPlaying() {
 
   return (
     <div className="spotify-player max-w-full rounded-lg overflow-hidden bg-gradient-to-r from-[#3b2a3b]/40 via-[#5b2a2a]/20 to-[#2a2a4b]/40 p-4 text-white">
-      <h4 className="text-lg font-bold mb-2">currently playing</h4>
+      {/* <h4 className="text-lg font-bold mb-2">currently playing</h4> */}
       <div className="flex items-center gap-4">
         {albumArt ? (
           <img src={albumArt} alt={item.album?.name || 'album art'} className="w-20 h-20 rounded-md object-cover" />
