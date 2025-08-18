@@ -113,25 +113,35 @@ export default function SpotifyNowPlaying() {
 
         /* effetto in rilievo (emboss) applicato al container spotify - FORZA solo inset, sovrascrive eventuali ombre esterne */
         .spotify-player {
-          /* effetto in rilievo più marcato usando ombre interne (inset) su più layer
-             + un alone esterno molto morbido per profondità (subtle) */
-          -webkit-box-shadow:
-            inset 10px 10px 20px rgba(0,0,0,0.6) !important,
-            inset -8px -8px 18px rgba(255,255,255,0.06) !important,
-            inset 0 1px 0 rgba(255,255,255,0.02) !important,
-            0 6px 22px rgba(2,6,23,0.18) !important;
-          box-shadow:
-            inset 10px 10px 20px rgba(0,0,0,0.6) !important,
-            inset -8px -8px 18px rgba(255,255,255,0.06) !important,
-            inset 0 1px 0 rgba(255,255,255,0.02) !important,
-            0 6px 22px rgba(2,6,23,0.18) !important;
+          /* esterno morbido per profondità + ombre interne forti per emboss */
+          box-shadow: 0 8px 28px rgba(2,6,23,0.45),
+                      inset 0 10px 26px rgba(0,0,0,0.64),
+                      inset 0 -4px 12px rgba(255,255,255,0.04);
+          -webkit-box-shadow: 0 8px 28px rgba(2,6,23,0.45),
+                              inset 0 10px 26px rgba(0,0,0,0.64),
+                              inset 0 -4px 12px rgba(255,255,255,0.04);
           border-radius: 0.5rem;
           border: 1px solid rgba(255,255,255,0.04);
-          backdrop-filter: blur(2px) saturate(110%);
-          -webkit-backdrop-filter: blur(2px) saturate(110%);
+          backdrop-filter: blur(3px) saturate(120%);
+          -webkit-backdrop-filter: blur(3px) saturate(120%);
           position: relative;
-          z-index: 0;
-          background-clip: padding-box; /* evita che il bordo mostri strisce dovute a inset */
+          z-index: 1; /* sopra il contenuto per pseudo-element highlight */
+          background-clip: padding-box;
+        }
+
+        /* sottile specular highlight per dare più rilievo (non influisce su click) */
+        .spotify-player::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          right: 0;
+          height: 36%;
+          pointer-events: none;
+          border-top-left-radius: 0.5rem;
+          border-top-right-radius: 0.5rem;
+          background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.00));
+          mix-blend-mode: overlay;
         }
       `}</style>
     </div>
