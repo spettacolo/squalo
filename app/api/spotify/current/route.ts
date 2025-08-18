@@ -132,7 +132,7 @@ export async function GET() {
     // handle empty body (Spotify returns 204 when nothing is playing)
     if (res.status === 204) {
       const payload: any = { playing: false };
-      if (debug) payload._debug = { token_flow: lastTokenFlow, profile };
+      if (debug) payload._debug = { token_flow: lastTokenFlow, profile, devices };
       return NextResponse.json(payload, { status: 200 });
     }
 
@@ -146,20 +146,20 @@ export async function GET() {
 
     if (!res.ok) {
       const payload: any = { error: body?.error || body, status: res.status };
-      if (debug) payload._debug = { token_flow: lastTokenFlow, profile };
+      if (debug) payload._debug = { token_flow: lastTokenFlow, profile, devices };
       if (lastTokenFlow === 'CLIENT_CREDENTIALS') {
         payload.help = 'client_credentials token cannot access /me endpoints. Obtain an Authorization Code refresh token and set SPOTIFY_REFRESH_TOKEN in environment.';
       }
       return NextResponse.json(payload, { status: res.status });
     }
+    // On success return the raw Spotify body (client expects this shape).
+    if (debug) {
+      // attach debug info without removing original fields
+      const out = { ...(body || {}), _debug: { token_flow: lastTokenFlow, profile, devices } };
+      return NextResponse.json(out);
+    }
 
-    // Try to detect playing state more precisely
-    const isPlaying = Boolean(body?.is_playing) || (body?.item != null && body?.is_playing !== false);
-    const deviceInfo = body?.device ? { id: body.device.id, name: body.device.name, is_active: body.device.is_active, type: body.device.type } : null;
-
-    const payload: any = { playing: !!isPlaying, data: body, device: deviceInfo };
-    if (debug) payload._debug = { token_flow: lastTokenFlow, profile };
-    return NextResponse.json(payload);
+    return NextResponse.json(body);
   } catch (err: any) {
     const payload: any = { error: err?.message || 'unexpected error' };
     if (debug) payload._raw = String(err?.stack || err);
