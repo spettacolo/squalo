@@ -113,11 +113,12 @@ export default function SpotifyNowPlaying() {
 
         /* effetto in rilievo (emboss) applicato al container spotify - FORZA solo inset, sovrascrive eventuali ombre esterne */
         .spotify-player {
-          /* solo ombre interne per effetto in rilievo (no shadow esterno) */
-          box-shadow: inset 0 10px 26px rgba(0,0,0,0.64),
-                      inset 0 -4px 12px rgba(255,255,255,0.04);
-          -webkit-box-shadow: inset 0 10px 26px rgba(0,0,0,0.64),
-                              inset 0 -4px 12px rgba(255,255,255,0.04);
+       /* solo ombre interne per effetto in rilievo (no shadow esterno)
+         aumentiamo l'highlight interno per schiarire il centro */
+       box-shadow: inset 0 10px 22px rgba(0,0,0,0.52),
+               inset 0 -14px 34px rgba(255,255,255,0.08);
+       -webkit-box-shadow: inset 0 10px 22px rgba(0,0,0,0.52),
+                    inset 0 -14px 34px rgba(255,255,255,0.08);
           border-radius: 0.5rem;
           border: 1px solid rgba(255,255,255,0.04);
           backdrop-filter: blur(3px) saturate(120%);
@@ -140,6 +141,17 @@ export default function SpotifyNowPlaying() {
           border-top-right-radius: 0.5rem;
           background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.00));
           mix-blend-mode: overlay;
+        }
+        /* overlay interno chiaro per schiarire il centro (come lo shoutbox) */
+        .spotify-player::after {
+          content: '';
+          position: absolute;
+          inset: 8px; /* lascia l'effetto di bordo visibile */
+          border-radius: calc(0.5rem - 8px);
+          pointer-events: none;
+          background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+          mix-blend-mode: overlay;
+          opacity: 0.95;
         }
       `}</style>
     </div>
