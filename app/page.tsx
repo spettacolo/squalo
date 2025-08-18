@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import ParticleBackground from "@/components/ui/particle-background";
 import Donations from "@/components/ui/donations";
+import SpotifyNowPlaying from "@/components/ui/spotify";
 
 const BG_URL = "/squalo_bg.svg";
 
@@ -242,6 +243,11 @@ export default function HomePage() {
                 </div>
               </motion.div>
 
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
+                <h3 className="text-xl font-semibold">Currently Playing</h3>
+                <SpotifyNowPlaying />
+              </motion.div>
+              
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
                 <h3 className="text-xl font-semibold">Contact Me</h3>
                 {/* shoutbox: local state only, glass inset style */}
