@@ -19,6 +19,24 @@ async function fetchAccessTokenClientCredentials(clientId: string, clientSecret:
   return json as { access_token: string; token_type: string; expires_in: number };
 }
 
+async function fetchAccessTokenRefresh(refreshToken: string, clientId: string, clientSecret: string) {
+  const body = new URLSearchParams();
+  body.set('grant_type', 'refresh_token');
+  body.set('refresh_token', refreshToken);
+
+  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+
+  const res = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', Authorization: `Basic ${auth}` },
+    body: body.toString(),
+  });
+
+  if (!res.ok) throw new Error('failed to refresh access token');
+  const json = await res.json();
+  return json as { access_token: string; token_type: string; expires_in: number; refresh_token?: string };
+}
+
 async function getAccessToken() {
   // prefer explicit long-lived token if provided
   const explicit = process.env.SPOTIFY_ACCESS_TOKEN;
@@ -26,7 +44,11 @@ async function getAccessToken() {
 
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-  if (!clientId || !clientSecret) return null;
+  const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
+  if (!clientId || !clientSecret) {
+    // cannot do any token flow without client credentials
+    return null;
+  }
 
   // cached token still valid?
   const now = Date.now();
@@ -34,6 +56,19 @@ async function getAccessToken() {
     return cachedToken.access_token;
   }
 
+  // prefer user-refresh flow if we have a refresh token (gives user-scoped access)
+  if (refreshToken) {
+    try {
+      const tok = await fetchAccessTokenRefresh(refreshToken, clientId, clientSecret);
+      cachedToken = { access_token: tok.access_token, expires_at: now + tok.expires_in * 1000 };
+      return tok.access_token;
+    } catch (e) {
+      // fall back to client_credentials if refresh fails
+      console.warn('refresh token flow failed, falling back to client_credentials', e);
+    }
+  }
+
+  // fallback: client_credentials (note: not user-scoped)
   const tok = await fetchAccessTokenClientCredentials(clientId, clientSecret);
   cachedToken = { access_token: tok.access_token, expires_at: now + tok.expires_in * 1000 };
   return tok.access_token;
