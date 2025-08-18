@@ -46,7 +46,7 @@ export async function GET() {
       return NextResponse.json({ error: 'No SPOTIFY_ACCESS_TOKEN or client credentials configured' }, { status: 500 });
     }
 
-    const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+    const res = await fetch('https://api.spotify.com/user/ar0ywn3bpj4umygis3i3eavqi/get-now-playing', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
