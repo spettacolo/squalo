@@ -110,6 +110,19 @@ export default function SpotifyNowPlaying() {
         .marquee { height: 1.4em; }
         .marquee-inner { padding-left: 100%; animation: marquee 12s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
+
+        /* effetto in rilievo (emboss) applicato al container spotify */
+        .spotify-player {
+          /* ombra interna per rilievo + ombra esterna per profondità */
+          box-shadow:
+            inset 6px 6px 12px rgba(0,0,0,0.45),
+            inset -6px -6px 12px rgba(255,255,255,0.03),
+            6px 6px 18px rgba(0,0,0,0.35);
+          border-radius: 0.5rem;
+          border: 1px solid rgba(255,255,255,0.04);
+          /* leggero filtro per aumentare il contrasto del rilievo */
+          backdrop-filter: blur(2px) saturate(110%);
+        }
       `}</style>
     </div>
   );
