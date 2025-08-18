@@ -113,12 +113,10 @@ export default function SpotifyNowPlaying() {
 
         /* effetto in rilievo (emboss) applicato al container spotify - FORZA solo inset, sovrascrive eventuali ombre esterne */
         .spotify-player {
-          /* esterno morbido per profondità + ombre interne forti per emboss */
-          box-shadow: 0 8px 28px rgba(2,6,23,0.45),
-                      inset 0 10px 26px rgba(0,0,0,0.64),
+          /* solo ombre interne per effetto in rilievo (no shadow esterno) */
+          box-shadow: inset 0 10px 26px rgba(0,0,0,0.64),
                       inset 0 -4px 12px rgba(255,255,255,0.04);
-          -webkit-box-shadow: 0 8px 28px rgba(2,6,23,0.45),
-                              inset 0 10px 26px rgba(0,0,0,0.64),
+          -webkit-box-shadow: inset 0 10px 26px rgba(0,0,0,0.64),
                               inset 0 -4px 12px rgba(255,255,255,0.04);
           border-radius: 0.5rem;
           border: 1px solid rgba(255,255,255,0.04);
