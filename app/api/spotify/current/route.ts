@@ -91,6 +91,19 @@ export async function GET() {
       return NextResponse.json({ error: 'No SPOTIFY_CLIENT_ID/SPOTIFY_CLIENT_SECRET configured' }, { status: 500 });
     }
 
+    // fetch profile to confirm which user the token is for (helps debug wrong account)
+    let profile: any = null;
+    try {
+      const p = await fetch('https://api.spotify.com/v1/me', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+        cache: 'no-store',
+      });
+      if (p.ok) profile = await p.json();
+    } catch (e) {
+      // ignore profile errors
+    }
+
     const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
       method: 'GET',
       headers: {
@@ -102,7 +115,9 @@ export async function GET() {
 
     // handle empty body (Spotify returns 204 when nothing is playing)
     if (res.status === 204) {
-      return NextResponse.json({ playing: false }, { status: 200 });
+      const payload: any = { playing: false };
+      if (debug) payload._debug = { token_flow: lastTokenFlow, profile };
+      return NextResponse.json(payload, { status: 200 });
     }
 
     const text = await res.text();
@@ -115,16 +130,19 @@ export async function GET() {
 
     if (!res.ok) {
       const payload: any = { error: body?.error || body, status: res.status };
-      if (debug) payload._debug = { token_flow: lastTokenFlow };
-      // If we used client_credentials, explain why /me fails
+      if (debug) payload._debug = { token_flow: lastTokenFlow, profile };
       if (lastTokenFlow === 'CLIENT_CREDENTIALS') {
         payload.help = 'client_credentials token cannot access /me endpoints. Obtain an Authorization Code refresh token and set SPOTIFY_REFRESH_TOKEN in environment.';
       }
       return NextResponse.json(payload, { status: res.status });
     }
 
-    const payload: any = { playing: true, data: body };
-    if (debug) payload._debug = { token_flow: lastTokenFlow };
+    // Try to detect playing state more precisely
+    const isPlaying = Boolean(body?.is_playing) || (body?.item != null && body?.is_playing !== false);
+    const deviceInfo = body?.device ? { id: body.device.id, name: body.device.name, is_active: body.device.is_active, type: body.device.type } : null;
+
+    const payload: any = { playing: !!isPlaying, data: body, device: deviceInfo };
+    if (debug) payload._debug = { token_flow: lastTokenFlow, profile };
     return NextResponse.json(payload);
   } catch (err: any) {
     const payload: any = { error: err?.message || 'unexpected error' };
