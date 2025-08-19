@@ -68,15 +68,36 @@ export async function GET() {
 		const text = await res.text();
 		try {
 			const json = text ? JSON.parse(text) : {};
-			const out: any = { ...(json || {}) };
+				const out: any = { ...(json || {}) };
 
-			if (json.refresh_token) {
-				// attempt to update Vercel env var
-				const vercelResult = await upsertVercelEnvVar('SPOTIFY_REFRESH_TOKEN', String(json.refresh_token));
-				out._vercel = vercelResult;
-			}
+				// build debug object with environment presence and masked refresh token
+				const debug: any = {
+					vercel_token_present: !!process.env.VERCEL_TOKEN,
+					vercel_project_id_present: !!process.env.VERCEL_PROJECT_ID,
+					team_id_present: !!process.env.VERCEL_TEAM_ID,
+					used_refresh_token: refreshToken ? String(refreshToken).slice(0, 6) + '…' + String(refreshToken).slice(-6) : null,
+					spotify_response_status: res.status,
+				};
 
-			return NextResponse.json(out, { status: res.status });
+				// if Spotify provided a new refresh_token, try to upsert on Vercel and attach result
+				if (json.refresh_token) {
+					try {
+						const vercelResult = await upsertVercelEnvVar('SPOTIFY_REFRESH_TOKEN', String(json.refresh_token));
+						out._vercel = vercelResult;
+						debug._vercel = vercelResult;
+					} catch (e: any) {
+						out._vercel = { ok: false, reason: String(e?.message || e) };
+						debug._vercel = out._vercel;
+					}
+				} else {
+					// explicitly note that we did not attempt Vercel upsert because no new refresh_token was returned
+					out._vercel = { attempted: false, reason: 'no_new_refresh_token' };
+					debug._vercel = out._vercel;
+				}
+
+				out._debug = debug;
+				out._raw_text = text;
+				return NextResponse.json(out, { status: res.status });
 		} catch (e) {
 			return NextResponse.json({ raw: text }, { status: res.status });
 		}
