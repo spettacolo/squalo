@@ -58,7 +58,7 @@ function Shoutbox() {
 
       <div className="mt-3 max-h-48 overflow-auto space-y-2">
         {messages.length === 0 ? (
-          <div className="text-sm text-shark-sand/60">No messages yet.</div>
+          <div className="text-sm text-shark-sand/60">Nessun messaggio ancora.</div>
         ) : (
           messages.map((m, i) => (
             <div key={i} className="text-sm rounded-md bg-shark-light/5 px-3 py-2 text-shark-sand">
