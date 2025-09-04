@@ -243,7 +243,9 @@ export default function HomePage() {
 
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
                 <h3 className="text-xl font-semibold" style={{ marginBottom: '10px' }}>Currently Playing</h3>
-                <SpotifyNowPlaying />
+                <div className="pr-6">
+                  <SpotifyNowPlaying />
+                </div>
               </motion.div>
               
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
