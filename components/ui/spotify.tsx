@@ -117,10 +117,11 @@ export default function SpotifyNowPlaying() {
         const res = await fetch('/api/spotify/current')
         const json = await res.json()
         if (res.ok) {
+          const normalized = normalizeTrack(json)
           setLoading(false)
-          setTrackData(json)
-          progressRef.current = (json.progress ?? json.progress_ms ?? 0)
-          setProgressSeconds(Math.floor((json.progress ?? json.progress_ms ?? 0) / 1000))
+          setTrackData(normalized)
+          progressRef.current = normalized.progress ?? 0
+          setProgressSeconds(Math.floor((normalized.progress ?? 0) / 1000))
         }
       } catch (e) {
         // ignore fetch errors during polling
@@ -133,12 +134,13 @@ export default function SpotifyNowPlaying() {
       const handle = (ev: MessageEvent<string>) => {
         try {
           const parsed = JSON.parse(ev.data) as any
+          const normalized = normalizeTrack(parsed)
           setLoading(false)
-          setTrackData(parsed)
-          progressRef.current = parsed.progress ?? parsed.progress_ms ?? 0
-          setProgressSeconds(Math.floor((parsed.progress ?? parsed.progress_ms ?? 0) / 1000))
+          setTrackData(normalized)
+          progressRef.current = normalized.progress ?? 0
+          setProgressSeconds(Math.floor((normalized.progress ?? 0) / 1000))
         } catch (e) {
-          // ignore parse errors
+          // ignore parse/normalization errors
         }
       }
 
@@ -175,6 +177,43 @@ export default function SpotifyNowPlaying() {
       }
     }
   }, [])
+
+  // normalize incoming shape (Spotify can return many shapes) to our TrackData
+  function normalizeTrack(raw: any): TrackData {
+    try {
+      // Spotify /api/currently-playing returns a few nested shapes; try to map common ones
+      // If we've already got the expected shape, return as-is with safe defaults
+      const out: any = {};
+      // prefer top-level fields if already normalized
+      out.id = raw.id ?? raw.item?.id ?? String(Math.random())
+      out.name = raw.name ?? raw.item?.name ?? 'unknown'
+      out.artists = raw.artists ?? (raw.item?.artists ? (raw.item.artists.map((a: any) => a.name)) : [])
+      out.album = { name: raw.album?.name ?? raw.item?.album?.name ?? '', image: raw.album?.image ?? raw.item?.album?.images?.[0]?.url ?? '' }
+      out.url = raw.url ?? raw.external_urls?.spotify ?? raw.item?.external_urls?.spotify ?? '#'
+      out.playing = Boolean(raw.playing ?? raw.is_playing ?? raw.item?.is_playing)
+      // unify progress/total in ms
+      out.progress = raw.progress ?? raw.progress_ms ?? (raw.item?.progress_ms ?? 0)
+      out.total = raw.total ?? raw.total_ms ?? (raw.item?.duration_ms ?? raw.item?.duration ?? 0)
+      // ensure ms numbers
+      out.progress = typeof out.progress === 'number' ? out.progress : Number(out.progress || 0)
+      out.total = typeof out.total === 'number' ? out.total : Number(out.total || 0)
+      out.lyrics = Array.isArray(raw.lyrics) ? raw.lyrics : (raw.item?.lyrics ?? null)
+      return out as TrackData
+    } catch (e) {
+      // fallback minimal shape to avoid crashes
+      return {
+        id: 'unknown',
+        album: { name: '', image: '' },
+        artists: [],
+        name: raw?.name ?? 'unknown',
+        url: '#',
+        playing: false,
+        progress: 0,
+        total: 0,
+        lyrics: null,
+      }
+    }
+  }
 
   useEffect(() => {
     let lastSecond = 0
