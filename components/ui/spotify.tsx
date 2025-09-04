@@ -93,7 +93,7 @@ export default function SpotifyNowPlaying() {
         <div className="flex-1 min-w-0">
           <div className="marquee text-xl font-semibold whitespace-nowrap overflow-hidden">
             <div className="marquee-inner inline-block">
-              {title} — {artists}
+              {title} {/*— {artists}*/}
             </div>
           </div>
 
