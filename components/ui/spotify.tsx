@@ -77,8 +77,11 @@ export default function SpotifyNowPlaying() {
 
   return (
     <div
-      className="spotify-player max-w-full rounded-lg overflow-hidden bg-shark-mid/30 backdrop-blur-sm ring-1 ring-shark-light/10 p-2 text-white"
-      style={{ boxShadow: 'inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02)' }}
+      className="spotify-player max-w-full rounded-lg overflow-hidden backdrop-blur-sm ring-1 ring-shark-light/10 p-2 text-white"
+      style={{
+        boxShadow: 'inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02)',
+        backgroundColor: 'rgba(8,20,44,0.18)'
+      }}
     >
       {/* <h4 className="text-lg font-bold mb-2">currently playing</h4> */}
       <div className="flex items-center gap-4">
@@ -98,7 +101,7 @@ export default function SpotifyNowPlaying() {
           <div className="text-sm text-gray-300 mt-1">by {artists}</div>
 
           <div className="mt-3">
-            <div className="w-full h-2 bg-white/12 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-black/20 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.18)' }}>
               <div className="h-2 bg-white rounded-full" style={{ width: `${pct * 100}%`, transition: 'width 0.2s linear' }} />
             </div>
             <div className="flex justify-between text-xs text-gray-200 mt-1">
