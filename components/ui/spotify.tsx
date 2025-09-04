@@ -34,14 +34,17 @@ const TrackImage: FC<{ data: TrackData }> = ({ data }) => (
   </a>
 )
 
-const TrackInfo: FC<{ data: TrackData; progress: number }> = ({ data, progress }) => {
-  const formatTime = (s: number | undefined) => {
-    if (s === undefined || s === null) return '--:--'
-    const total = Math.floor(s)
+const TrackInfo: FC<{ data: TrackData; progressMs: number }> = ({ data, progressMs }) => {
+  const formatTimeMs = (ms: number | undefined) => {
+    if (ms === undefined || ms === null) return '--:--'
+    const total = Math.floor(ms / 1000)
     const m = Math.floor(total / 60)
     const sec = total % 60
     return `${m}:${sec.toString().padStart(2, '0')}`
   }
+
+  const totalMs = data.total ?? 0
+  const pct = totalMs > 0 ? Math.min(progressMs / totalMs * 100, 100) : 0
 
   return (
     <div className="track-info">
@@ -55,13 +58,13 @@ const TrackInfo: FC<{ data: TrackData; progress: number }> = ({ data, progress }
 
       <div className="track-timer">
         <div className="track-time">
-          <div className="track-time-elapsed">{formatTime(progress)}</div>
+          <div className="track-time-elapsed">{formatTimeMs(progressMs)}</div>
           <div>{data.playing ? '▶' : '▮▮'}</div>
-          <div className="track-time-remaining">{formatTime(data.total)}</div>
+          <div className="track-time-remaining">{formatTimeMs(totalMs)}</div>
         </div>
 
         <div className="track-progress">
-          <div className="track-progress-completed" style={{ width: `${Math.min(progress / (data.total ?? 1) * 100, 100)}%` }} />
+          <div className="track-progress-completed" style={{ width: `${pct}%` }} />
         </div>
       </div>
     </div>
@@ -264,8 +267,8 @@ export default function SpotifyNowPlaying() {
       <>
         <img className="track-background" src={trackData.album.image} alt={trackData.album.name} />
         <TrackLyrics lyrics={trackData.lyrics ?? null} index={lyricIndex} />
-        <TrackImage data={trackData} />
-        <TrackInfo data={trackData} progress={progressSeconds} />
+  <TrackImage data={trackData} />
+  <TrackInfo data={trackData} progressMs={progressSeconds * 1000} />
       </>
     )
   }
