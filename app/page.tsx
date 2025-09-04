@@ -217,7 +217,7 @@ export default function HomePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <div key={i} className="h-36 rounded-lg bg-shark-light/6 flex items-center justify-center">
-                      <span className="text-shark-sand/80">Project {i} (placeholder)</span>
+                      <span className="text-shark-sand/80">Project {i} (soon)</span>
                     </div>
                   ))}
                 </div>
