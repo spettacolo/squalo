@@ -77,7 +77,7 @@ export default function SpotifyNowPlaying() {
 
   return (
     <div
-      className="spotify-player max-w-full rounded-lg overflow-hidden bg-shark-mid/30 backdrop-blur-sm ring-1 ring-shark-light/10 p-2 text-white"
+      className="spotify-player max-w-full rounded-lg overflow-hidden bg-shark-mid/30 ring-1 ring-shark-light/10 p-2 text-white"
       style={{
         boxShadow: 'inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02)',
         backgroundColor: 'rgba(10,28,60,0.18)'
