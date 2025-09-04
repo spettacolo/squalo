@@ -32,7 +32,7 @@ function Shoutbox() {
     <div className="mt-3">
       <div className="flex flex-col sm:flex-row gap-3 items-center">
         <div
-          className="flex-1 rounded-lg bg-transparent ring-1 ring-shark-light/10 p-2"
+          className="flex-1 w-full rounded-lg bg-transparent ring-1 ring-shark-light/10 p-2"
           style={{ boxShadow: 'inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02)' }}
         >
           <textarea
@@ -44,7 +44,7 @@ function Shoutbox() {
           />
         </div>
 
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 self-center sm:self-auto">
           <button
             type="button"
             onClick={send}
