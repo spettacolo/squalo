@@ -99,7 +99,7 @@ export default function SpotifyNowPlaying() {
 
           <div className="text-sm text-gray-300 mt-1">by {artists}</div>
 
-          <div className="mt-3">
+          <div className="mt-3 pr-6">
             <div className="w-full h-2 bg-white/12 rounded-full overflow-hidden">
               <div className="h-2 bg-white rounded-full" style={{ width: `${pct * 100}%`, transition: 'width 0.2s linear' }} />
             </div>
