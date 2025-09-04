@@ -104,23 +104,76 @@ export default function SpotifyNowPlaying() {
   const progressRef = useRef<number>(0)
   const [progressSeconds, setProgressSeconds] = useState(0)
   const [lyricIndex, setLyricIndex] = useState(0)
+  const pollingRef = useRef<number | null>(null)
 
+  // Try SSE first; if the endpoint doesn't exist (404) EventSource will error
+  // and we fallback to simple polling of /api/spotify/current.
   useEffect(() => {
-    const sse = new EventSource(`${API_URL}/api/spotify`)
-    const handle = (ev: MessageEvent<string>) => {
-      const parsed = JSON.parse(ev.data) as any
-      setLoading(false)
-      setTrackData(parsed)
-      progressRef.current = parsed.progress ?? parsed.progress_ms ?? 0
-      setProgressSeconds(Math.floor((parsed.progress ?? parsed.progress_ms ?? 0) / 1000))
+    let sse: EventSource | null = null
+    let didFallback = false
+
+    const fetchNow = async () => {
+      try {
+        const res = await fetch('/api/spotify/current')
+        const json = await res.json()
+        if (res.ok) {
+          setLoading(false)
+          setTrackData(json)
+          progressRef.current = (json.progress ?? json.progress_ms ?? 0)
+          setProgressSeconds(Math.floor((json.progress ?? json.progress_ms ?? 0) / 1000))
+        }
+      } catch (e) {
+        // ignore fetch errors during polling
+      }
     }
 
-    sse.addEventListener('track:current', handle)
-    sse.addEventListener('track:play', handle)
-    sse.addEventListener('track:pause', handle)
-    sse.addEventListener('track:resume', handle)
+    try {
+      sse = new EventSource(`${API_URL}/api/spotify`)
 
-    return () => sse.close()
+      const handle = (ev: MessageEvent<string>) => {
+        try {
+          const parsed = JSON.parse(ev.data) as any
+          setLoading(false)
+          setTrackData(parsed)
+          progressRef.current = parsed.progress ?? parsed.progress_ms ?? 0
+          setProgressSeconds(Math.floor((parsed.progress ?? parsed.progress_ms ?? 0) / 1000))
+        } catch (e) {
+          // ignore parse errors
+        }
+      }
+
+      sse.addEventListener('track:current', handle)
+      sse.addEventListener('track:play', handle)
+      sse.addEventListener('track:pause', handle)
+      sse.addEventListener('track:resume', handle)
+
+      sse.onerror = () => {
+        // connection failed (likely 404) — close SSE and start polling
+        if (sse) {
+          try { sse.close() } catch (e) {}
+          sse = null
+        }
+        if (!didFallback) {
+          didFallback = true
+          fetchNow()
+          pollingRef.current = window.setInterval(fetchNow, 3000)
+        }
+      }
+    } catch (e) {
+      // EventSource construction failed — fallback to polling
+      fetchNow()
+      pollingRef.current = window.setInterval(fetchNow, 3000)
+    }
+
+    return () => {
+      if (sse) {
+        try { sse.close() } catch (e) {}
+      }
+      if (pollingRef.current) {
+        window.clearInterval(pollingRef.current)
+        pollingRef.current = null
+      }
+    }
   }, [])
 
   useEffect(() => {
