@@ -156,13 +156,11 @@ export default function HomePage() {
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
                 <div className="rounded-md bg-shark-light/5 px-3 py-2 sm:p-6 md:pr-20">
                   {/*<h2 className="text-2xl font-semibold">About</h2>*/}
-                  <div
-                    className="flex-1 rounded-lg bg-transparent p-2"
-                    style={{ boxShadow: 'inset 0 6px 20px rgba(0,0,0,0.65)' }}
-                  >
+                  <div className="hidden md:block">
+                    <p className="text-shark-sand mt-2">
                       I'm a <span className="keys"><b>developer</b></span> who wears many hats, always eager to learn and build. <br />While my main gig is <span className="keys"><b>programming</b></span> — <span className="notes"><i>crafting code and developing applications</i></span> — I also have a keen eye for detail, which I exercise through <span className="keys"><b>image editing</b></span>. <br />And when I need to unwind, you can bet I'm listening to music   of all kinds! Beyond just listening, I also love to play: I'm currently learning to play the <span className="keys"><b>guitar</b></span>, and I have previous experience with 4 years of <span className="keys"><b>violin</b></span>, plus some basic knowledge of <span className="notes"><i>piano</i></span> and <span className="notes"><i>drums</i></span>.
-                      </p>
-                    </div>
+                    </p>
+                  </div>
 
                     {/* collapsible preview on small screens */}
                     <div className="md:hidden">
@@ -211,7 +209,6 @@ export default function HomePage() {
                       </details>
                     </div>
                   </div>
-                </div>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
