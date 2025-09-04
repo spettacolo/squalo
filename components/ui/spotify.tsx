@@ -1,175 +1,224 @@
 "use client";
+"use client";
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
+import clsx from 'clsx'
 
-type SpotifyItem = any;
+type Lyric = { time: number; lyric: string }
 
-export default function SpotifyNowPlaying() {
-  const [data, setData] = useState<any | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0); // ms
-  const intervalRef = useRef<number | null>(null);
-  const progTickRef = useRef<number | null>(null);
+type TrackData = {
+  id: string
+  album: { name: string; image: string }
+  artists: string[]
+  name: string
+  url?: string
+  playing?: boolean
+  progress?: number // seconds
+  total?: number // seconds
+  lyrics?: Lyric[] | null
+}
 
-  async function fetchNow() {
-    try {
-      const res = await fetch('/api/spotify/current');
-      const json = await res.json();
-      if (!res.ok) {
-        setError(json?.error?.message || json?.error || 'error');
-        setData(null);
-        return;
-      }
-      setError(null);
-      setData(json);
-      setIsPlaying(!!json?.is_playing);
-      setProgress(json?.progress_ms ?? 0);
-    } catch (e: any) {
-      setError(e?.message || 'fetch error');
-      setData(null);
-    }
+const getLyricByTime = (lyrics: Lyric[], time: number) => {
+  for (let i = lyrics.length - 1; i >= 0; i--) {
+    if (time >= lyrics[i].time) return { entry: lyrics[i], index: i }
   }
+  return null
+}
 
-  // poll every 3s for authoritative state
-  useEffect(() => {
-    fetchNow();
-    intervalRef.current = window.setInterval(fetchNow, 3000);
-    return () => { if (intervalRef.current) window.clearInterval(intervalRef.current); };
-  }, []);
+const API_URL = '' // same-origin
 
-  // when data changes start/stop per-second progress tick
-  useEffect(() => {
-    if (progTickRef.current) { window.clearInterval(progTickRef.current); progTickRef.current = null; }
-    if (data && data.is_playing) {
-      progTickRef.current = window.setInterval(() => {
-        setProgress((p) => p + 1000);
-      }, 1000) as unknown as number;
-    }
-    return () => { if (progTickRef.current) { window.clearInterval(progTickRef.current); progTickRef.current = null; } };
-  }, [data?.is_playing]);
+const TrackImage: FC<{ data: TrackData }> = ({ data }) => (
+  <a className="track-image" href={data.url ?? '#'}>
+    <img src={data.album.image} alt={data.album.name} />
+    <div className="track-image-link" />
+  </a>
+)
 
-  if (error) {
-    return (
-      <div className="spotify-player opacity-80 text-sm text-muted">
-        {/* <h4 className="text-lg font-bold">currently playing</h4> */}
-        <p className="text-xs">{error}</p>
-      </div>
-    );
+const TrackInfo: FC<{ data: TrackData; progress: number }> = ({ data, progress }) => {
+  const formatTime = (s: number | undefined) => {
+    if (s === undefined || s === null) return '--:--'
+    const total = Math.floor(s)
+    const m = Math.floor(total / 60)
+    const sec = total % 60
+    return `${m}:${sec.toString().padStart(2, '0')}`
   }
-
-  if (!data || !data.item) {
-    return (
-      <div className="spotify-player opacity-80 text-sm text-muted">
-        {/* <h4 className="text-lg font-bold">currently playing</h4> */}
-        <p className="text-xs">nothing playing right now.</p>
-      </div>
-    );
-  }
-
-  const item: SpotifyItem = data.item;
-  const artists = (item.artists || []).map((a: any) => a.name).join(', ');
-  const title = item.name || '';
-  const albumArt = item.album?.images?.[0]?.url;
-  const duration = item.duration_ms || 0;
-
-  const pct = duration > 0 ? Math.min(1, progress / duration) : 0;
 
   return (
-    <div
-      className="spotify-track relative max-w-full rounded-lg overflow-hidden bg-shark-mid/30 backdrop-blur-sm ring-1 ring-shark-light/10 p-2 text-white"
-      style={{ boxShadow: 'inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02)' }}
-    >
-      {/* blurred subtle background like in the reference */}
-      {albumArt && <img className="track-background" src={albumArt} alt={item.album?.name || 'album art'} />}
+    <div className="track-info">
+      <div className="track-data-container">
+        <div className="track-text-info">
+          <p className="track-name"><b>{data.name}</b></p>
+          <p className="track-artists"><span className="text-half-visible">by</span> {data.artists.join(', ')}</p>
+        </div>
+        <div className="track-button">♪</div>
+      </div>
 
-      <div className="flex items-center gap-4">
-        {albumArt ? (
-          <a className="track-image" href={item.external_urls?.spotify ?? '#'}>
-            <img src={albumArt} alt={item.album?.name || 'album art'} style={{ width: 100, height: 100 }} className="rounded-md object-cover" />
-            <div className="track-image-link">
-              {/* overlay icon */}
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 3v2a1 1 0 0 0 1 1h4v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7V3h2z" fill="white" fillOpacity="0.9"/></svg>
-            </div>
-          </a>
-        ) : (
-          <div className="track-image" style={{ width: 100, height: 100 }}>
-            <div className="rounded-md bg-neutral-800" style={{ width: '100%', height: '100%' }} />
-          </div>
-        )}
+      <div className="track-timer">
+        <div className="track-time">
+          <div className="track-time-elapsed">{formatTime(progress)}</div>
+          <div>{data.playing ? '▶' : '▮▮'}</div>
+          <div className="track-time-remaining">{formatTime(data.total)}</div>
+        </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="marquee text-xl font-semibold whitespace-nowrap overflow-hidden">
-            <div className="marquee-inner inline-block">
-              {title} — {artists}
-            </div>
-          </div>
-
-          <div className="text-sm text-gray-300 mt-1">by {artists}</div>
-
-          <div className="mt-3">
-            <div className="w-full h-2 bg-white/12 rounded-full overflow-hidden">
-              <div className="h-2 bg-white rounded-full" style={{ width: `${pct * 100}%`, transition: 'width 0.2s linear' }} />
-            </div>
-            <div className="flex justify-between text-xs text-gray-200 mt-1">
-              <span>{msToTime(progress)}</span>
-              <span>{msToTime(duration)}</span>
-            </div>
-          </div>
+        <div className="track-progress">
+          <div className="track-progress-completed" style={{ width: `${Math.min(progress / (data.total ?? 1) * 100, 100)}%` }} />
         </div>
       </div>
+    </div>
+  )
+}
 
-      {/* lyrics pane (absolute, like the reference) */}
-      <div className="track-lyrics" data-has-lyrics={Array.isArray(data?.lyrics) && data.lyrics.length > 0}>
-        {
-          Array.isArray(data?.lyrics) && data.lyrics.map((l: any, i: number) => {
-            const isPlaying = i === (data?.lyricIndex ?? -1);
-            const isAround = i === (data?.lyricIndex ?? -1) + 1;
-            return (
-              <div key={l.time} className={[ 'track-lyric', isPlaying ? 'track-lyric-playing' : '', isAround ? 'track-lyric-around-playing' : '' ].join(' ')}>
-                {l.lyric}
-              </div>
-            );
-          })
+const TrackLyrics: FC<{ lyrics: Lyric[] | null; index: number }> = ({ lyrics, index }) => {
+  const parentRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!parentRef.current) return
+    const children = [...parentRef.current.children] as HTMLElement[]
+    if (children.length === 0) {
+      parentRef.current.style.translate = `0 0px`
+      return
+    }
+    const heights = children.map((c) => c.offsetTop)
+    const neededOffset = heights[Math.max(0, Math.min(index, heights.length - 1))] || 0
+    parentRef.current.style.translate = `0 -${neededOffset}px`
+  }, [index])
+
+  return (
+    <div className="track-lyrics" ref={parentRef} data-has-lyrics={lyrics !== null && (lyrics?.length ?? 0) > 0}>
+      {lyrics?.map(({ time, lyric }, i) => {
+        const isPlaying = i === index
+        const isAround = i === index + 1
+        return (
+          <div key={time} className={clsx('track-lyric', isPlaying && 'track-lyric-playing', isAround && 'track-lyric-around-playing')}>
+            {lyric}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+export default function SpotifyNowPlaying() {
+  const [loading, setLoading] = useState(true)
+  const [trackData, setTrackData] = useState<TrackData | null>(null)
+  const progressRef = useRef<number>(0)
+  const [progressSeconds, setProgressSeconds] = useState(0)
+  const [lyricIndex, setLyricIndex] = useState(0)
+
+  useEffect(() => {
+    const sse = new EventSource(`${API_URL}/api/spotify`)
+    const handle = (ev: MessageEvent<string>) => {
+      const parsed = JSON.parse(ev.data) as any
+      setLoading(false)
+      setTrackData(parsed)
+      progressRef.current = parsed.progress ?? parsed.progress_ms ?? 0
+      setProgressSeconds(Math.floor((parsed.progress ?? parsed.progress_ms ?? 0) / 1000))
+    }
+
+    sse.addEventListener('track:current', handle)
+    sse.addEventListener('track:play', handle)
+    sse.addEventListener('track:pause', handle)
+    sse.addEventListener('track:resume', handle)
+
+    return () => sse.close()
+  }, [])
+
+  useEffect(() => {
+    let lastSecond = 0
+    let lastLyricIndex = 0
+    let lastUpdateTime = Date.now()
+    let animationFrameID: number | null = null
+
+    const tick = () => {
+      if (trackData?.playing) {
+        const delta = Date.now() - lastUpdateTime
+        progressRef.current = Math.min(progressRef.current + delta, (trackData.total ?? 0) * 1000)
+        const seconds = Math.floor(progressRef.current / 1000)
+        if (seconds !== lastSecond) {
+          lastSecond = seconds
+          setProgressSeconds(seconds)
         }
+      }
+
+      if (trackData?.lyrics) {
+        const found = getLyricByTime(trackData.lyrics as Lyric[], progressRef.current / 1000)
+        if (found === null) {
+          lastLyricIndex = -1
+          setLyricIndex(-1)
+        } else if (lastLyricIndex !== found.index) {
+          lastLyricIndex = found.index
+          setLyricIndex(found.index)
+        }
+      }
+
+      lastUpdateTime = Date.now()
+      animationFrameID = requestAnimationFrame(tick)
+    }
+
+    animationFrameID = requestAnimationFrame(tick)
+    return () => { if (animationFrameID !== null) cancelAnimationFrame(animationFrameID) }
+  }, [trackData])
+
+  const renderInnerContent = () => {
+    if (loading) return <p>loading track data...</p>
+    if (trackData === null) return (
+      <div className="no-track-playing">
+        <p>no track is playing...</p>
+        <p className="text-small text-half-visible">perhaps try checking out later?</p>
       </div>
+    )
+
+    return (
+      <>
+        <img className="track-background" src={trackData.album.image} alt={trackData.album.name} />
+        <TrackLyrics lyrics={trackData.lyrics ?? null} index={lyricIndex} />
+        <TrackImage data={trackData} />
+        <TrackInfo data={trackData} progress={progressSeconds} />
+      </>
+    )
+  }
+
+  return (
+    <div className={clsx('spotify-track', loading && 'loading')}>
+      {renderInnerContent()}
 
       <style>{`
+        /* marquee */
         .marquee { height: 1.4em; }
         .marquee-inner { padding-left: 100%; animation: marquee 12s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
 
-        /* track image overlay */
-        .track-image { height: 100px; width: 100px; position: relative; display: inline-block; }
-        .track-image img { height: 100px; width: 100px; display: block; border-radius: 8px; }
-        .track-image-link { width: 100%; height: 100%; position: absolute; left: 0; top: 0; opacity: 0; background-color: rgba(0,0,0,0.5); border-radius: 8px; transition: opacity 0.1s linear; display: flex; justify-content: center; align-items: center; }
-        .track-image:hover > .track-image-link { opacity: 1; }
+        /* track image */
+        .track-image { height: 100px; width: 100px; position: relative; }
+        .track-image img { height: 100px; width: 100px; border-radius: 8px; display:block }
+        .track-image-link { position: absolute; inset: 0; opacity: 0; background-color: rgba(0,0,0,0.5); border-radius: 8px; display:flex; align-items:center; justify-content:center; transition: opacity 0.12s linear }
+        .track-image:hover > .track-image-link { opacity: 1 }
 
         /* lyrics */
-        .track-lyrics { position: absolute; right: calc(0.8em * 2 + 24px); top: 0.8em; text-align: right; user-select: none; display: flex; flex-direction: column; gap: 0.2rem; max-width: 40%; word-wrap: break-word; transition: translate 0.2s ease-in-out, opacity 1s ease-in-out; }
-        @media (max-width: 640px) { .track-lyrics { display: none; } }
+        .track-lyrics { position: absolute; right: calc(0.8em * 2 + 24px); top: 0.8em; text-align: right; user-select: none; display:flex; flex-direction:column; gap:0.2rem; max-width:40%; word-wrap:break-word; transition: translate 0.2s ease-in-out, opacity 1s ease-in-out }
+        @media (max-width: 640px) { .track-lyrics { display: none } }
+        .track-lyric { opacity: 0.2; line-height: 1.2rem; text-transform: lowercase; font-style: italic; filter: blur(2px); transition: opacity 0.2s ease-in-out, font-size 0.2s ease-in-out, filter 0.2s ease-in-out }
+        .track-lyric-playing { opacity: 1; filter: blur(0) }
+        .track-lyric-around-playing { filter: blur(1px) }
+        .track-lyrics[data-has-lyrics="true"] { opacity: 1 }
+        .track-lyrics[data-has-lyrics="false"] { opacity: 0 }
 
-        .track-lyric { opacity: 0.2; line-height: 1.2rem; text-transform: lowercase; font-style: italic; filter: blur(2px); transition: opacity 0.2s ease-in-out, font-size 0.2s ease-in-out, filter 0.2s ease-in-out; }
-        .track-lyric-playing { opacity: 1; line-height: 1.2rem; filter: blur(0px); }
-        .track-lyric-around-playing { filter: blur(1px); }
+        /* progress / info */
+        .track-info { display:flex; flex-direction:column; justify-content:space-between; width:100%; padding:2px }
+        .track-data-container { display:flex; flex-direction:row; justify-content:space-between }
+        .spotify-track .track-name { font-size:120% }
+        .track-artists { font-size:80% }
+        .track-timer { display:flex; flex-direction:column; gap:0.2em }
+        .track-time { display:flex; flex-direction:row; justify-content:space-between; font-size:80% }
+        .track-progress { border-radius:100px; background-color: #323232 }
+        .track-progress .track-progress-completed { height:4px; border-radius:100px; background-color:white; transition: width 0.5s ease-in-out }
 
-        .track-lyrics[data-has-lyrics="true"] { opacity: 1; }
-        .track-lyrics[data-has-lyrics="false"] { opacity: 0; }
+        /* subtle blurred background */
+        .track-background { position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; opacity:0.06; filter: blur(8px); pointer-events:none }
 
-        .track-progress { border-radius: 100px; background-color: #323232; }
-        .track-progress .track-progress-completed { height: 4px; border-radius: 100px; background-color: white; transition: width 0.5s ease-in-out; }
-
-        /* background image styling (subtle) */
-        .track-background { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.06; filter: blur(8px); pointer-events: none; }
+        /* container emboss (same as your shoutbox) */
+        .spotify-track { box-shadow: inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02); border-radius: 8px; padding: 0.5rem; }
       `}</style>
     </div>
-  );
-}
-
-function msToTime(ms: number) {
-  if (!ms && ms !== 0) return '--:--';
-  const total = Math.floor(ms / 1000);
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
+  )
 }
