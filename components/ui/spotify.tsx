@@ -54,10 +54,10 @@ export default function SpotifyNowPlaying() {
       <div className="spotify-player opacity-80 text-sm text-muted">
         {/* <h4 className="text-lg font-bold">currently playing</h4> */}
         <p className="text-xs">{error}</p>
-      <div
-        className="spotify-player max-w-full rounded-lg overflow-hidden bg-transparent p-2 text-white"
+      </div>
+    );
   }
-          boxShadow: 'inset 0 6px 20px rgba(0,0,0,0.65)',
+
   if (!data || !data.item) {
     return (
       <div className="spotify-player opacity-80 text-sm text-muted">
