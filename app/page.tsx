@@ -33,8 +33,7 @@ function Shoutbox() {
     <div className="mt-3">
       <div className="flex flex-col sm:flex-row gap-3 items-center">
         <div
-          className="flex-1 w-full rounded-lg bg-transparent ring-1 ring-shark-light/10 p-2"
-          style={{ boxShadow: 'inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02)' }}
+          className="flex-1 w-full rounded-lg bg-transparent p-2 glass-emboss"
         >
           <textarea
             value={text}
