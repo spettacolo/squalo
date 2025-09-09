@@ -1,5 +1,5 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600;800&display=swap'); */
-/* @import url('https://fonts.cdnfonts.com/css/cascadia-code'); */
+@import url('https://fonts.cdnfonts.com/css/cascadia-code');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -133,7 +133,7 @@ html, body, #__next {
   }
   body {
   @apply bg-background text-foreground;
-  font-family: 'Varela Round' , sans-serif; /* 'Cascadia Code', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace; */
+  font-family: 'Varela Round', 'Cascadia Code', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
   /* prevent text selection site-wide */
   -webkit-user-select: none;
   -moz-user-select: none;
