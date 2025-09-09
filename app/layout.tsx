@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Varela_Round } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
+// Use Varela Round as the main sans font but keep the same CSS variable
+const varela = Varela_Round({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  weight: "400"
 });
 
 const geistMono = Geist_Mono({
@@ -25,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${varela.variable} ${geistMono.variable} antialiased`}
       >
         {children}
       </body>
