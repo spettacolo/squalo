@@ -14,6 +14,10 @@ export async function GET() {
     const conn = (process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL || process.env.DATABASE_URL || '');
     const maskedConn = conn.replace(/:(.+?)@/, ':*****@');
     const sslInfo = { PGSSLMODE: process.env.PGSSLMODE || null, PGSSL_DISABLE: process.env.PGSSL_DISABLE || null };
-    return NextResponse.json({ ok: false, error: e && e.message ? e.message : String(e), conn: maskedConn, sslInfo }, { status: 500 });
+    const payload: any = { ok: false, error: e && e.message ? e.message : String(e), conn: maskedConn, sslInfo };
+    if (process.env.DB_DEBUG === 'true') {
+      payload.stack = e && e.stack ? e.stack : null;
+    }
+    return NextResponse.json(payload, { status: 500 });
   }
 }
