@@ -109,9 +109,8 @@ function Shoutbox() {
           <div className="text-sm text-shark-sand/60">No messages yet.</div>
         ) : (
           messages.map((m) => (
-            <div key={m.id} className="flex items-start justify-between text-sm rounded-md bg-shark-light/5 px-3 py-2 text-shark-sand">
+            <div key={m.id} className="flex items-start text-sm rounded-md bg-shark-light/5 px-3 py-2 text-shark-sand">
               <div className="whitespace-pre-wrap">{formatLog(m)}</div>
-              <button aria-label="delete" title="Delete" onClick={() => remove(m.id)} className="ml-3 text-xs text-shark-sand/60 hover:text-red-400">✕</button>
             </div>
           ))
         )}
