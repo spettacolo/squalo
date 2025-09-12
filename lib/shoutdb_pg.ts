@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
 import fs from 'fs/promises';
 import path from 'path';
+import { randomUUID } from 'crypto';
 
 /*
   Postgres helper for shoutbox. This file is provided as a ready-to-use helper
@@ -38,15 +39,32 @@ function buildConnectionString() {
 let pool: Pool | null = null;
 function getPool() {
   if (pool) return pool;
+  // Use a global cache to avoid creating multiple pools in serverless/hot-reload environments
+  const anyGlobal = global as any;
+  if (anyGlobal.__pgPool) {
+    pool = anyGlobal.__pgPool;
+    return pool;
+  }
+
   const connectionString = buildConnectionString();
-  pool = new Pool(connectionString ? { connectionString } : {});
+  const opts: any = {};
+  if (connectionString) opts.connectionString = connectionString;
+
+  // If the connection string includes sslmode=require or looks like a Supabase URL,
+  // ensure pg uses SSL and accepts the server certificate (rejectUnauthorized=false)
+  if (connectionString && /sslmode=require|sslmode=verify-ca|ssl=true|supabase|supa=base-pooler/i.test(connectionString)) {
+    opts.ssl = { rejectUnauthorized: false };
+  }
+
+  pool = new Pool(opts);
+  anyGlobal.__pgPool = pool;
   return pool;
 }
 
 export type PgMessage = { id: string; text: string; created_at: string };
 
 export async function getMessagesPg(limit = 200): Promise<PgMessage[]> {
-  const p = getPool();
+  const p = getPool()!;
   const sql = `SELECT id, text, created_at FROM messages ORDER BY created_at DESC LIMIT $1`;
   const res = await p.query(sql, [limit]);
   const rows = res.rows as { id: string; text: string; created_at: Date }[];
@@ -54,7 +72,7 @@ export async function getMessagesPg(limit = 200): Promise<PgMessage[]> {
 }
 
 export async function addMessagePg(id: string, text: string): Promise<PgMessage> {
-  const p = getPool();
+  const p = getPool()!;
   const sql = `INSERT INTO messages (id, text, created_at) VALUES ($1, $2, now() at time zone 'utc') RETURNING id, text, created_at`;
   const res = await p.query(sql, [id, text]);
   const r = res.rows[0];
@@ -62,7 +80,7 @@ export async function addMessagePg(id: string, text: string): Promise<PgMessage>
 }
 
 export async function deleteMessagePg(id: string): Promise<boolean> {
-  const p = getPool();
+  const p = getPool()!;
   const res = await p.query(`DELETE FROM messages WHERE id = $1`, [id]);
   return (res.rowCount ?? 0) > 0;
 }
@@ -76,3 +94,20 @@ export async function exportMessagesToJson(outFile = path.join(process.cwd(), 'd
 
 // export the pool for ad-hoc queries if needed
 export { pool };
+
+// --- Compatibility wrappers ---
+// Provide the same function names as the file-backed helper so the API can switch
+// between implementations without changing its callers.
+
+export async function getMessages(limit = 200) {
+  return getMessagesPg(limit);
+}
+
+export async function addMessage(text: string) {
+  const id = randomUUID();
+  return addMessagePg(id, text);
+}
+
+export async function deleteMessage(id: string) {
+  return deleteMessagePg(id);
+}
