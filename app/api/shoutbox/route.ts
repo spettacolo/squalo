@@ -1,29 +1,30 @@
 import { NextResponse } from 'next/server';
 
-// Dynamically choose DB implementation: prefer Postgres helper when POSTGRES_URL is set,
-// otherwise fall back to the file-backed helper.
+// Require Postgres. If no POSTGRES_URL or POSTGRES_URL_NON_POOLING is set, return 503
 let db: any = null;
 async function getDb() {
   if (db) return db;
-  if (process.env.POSTGRES_URL) {
-    try {
-      const pg = await import('../../../lib/shoutdb_pg');
-      db = pg;
-      return db;
-    } catch (e) {
-      console.error('Failed to load Postgres helper, falling back to file DB:', e);
-      // fallthrough to file-backed implementation
-    }
+  if (!process.env.POSTGRES_URL && !process.env.POSTGRES_URL_NON_POOLING && !process.env.DATABASE_URL) {
+    throw new Error('No Postgres configured. Set POSTGRES_URL or POSTGRES_URL_NON_POOLING');
   }
-  const fileDb = await import('../../../lib/shoutdb');
-  db = fileDb;
-  return db;
+  try {
+    const pg = await import('../../../lib/shoutdb_pg');
+    db = pg;
+    return db;
+  } catch (e) {
+    console.error('Failed to load Postgres helper:', e);
+    throw e;
+  }
 }
 
 export async function GET() {
-  const d = await getDb();
-  const msgs = await d.getMessages(200);
-  return NextResponse.json(msgs);
+  try {
+    const d = await getDb();
+    const msgs = await d.getMessages(200);
+    return NextResponse.json(msgs);
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message || 'DB not configured' }, { status: 503 });
+  }
 }
 
 export async function POST(request: Request) {
@@ -37,7 +38,8 @@ export async function POST(request: Request) {
     return NextResponse.json(msg, { status: 201 });
   } catch (e: any) {
     console.error('POST /api/shoutbox error:', e);
-    return NextResponse.json({ error: (e && e.message) || 'Invalid JSON' }, { status: 400 });
+    const status = e && e.message && e.message.includes('No Postgres configured') ? 503 : 400;
+    return NextResponse.json({ error: (e && e.message) || 'Invalid JSON' }, { status });
   }
 }
 
@@ -51,6 +53,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ success: ok });
   } catch (e: any) {
     console.error('DELETE /api/shoutbox error:', e);
-    return NextResponse.json({ error: 'Failed' }, { status: 500 });
+    const status = e && e.message && e.message.includes('No Postgres configured') ? 503 : 500;
+    return NextResponse.json({ error: 'Failed' }, { status });
   }
 }

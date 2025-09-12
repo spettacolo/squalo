@@ -52,16 +52,24 @@ function getPool() {
   const opts: any = {};
   if (connectionString) opts.connectionString = connectionString;
 
-  // Force SSL (without strict verification) for known hosted providers or when
-  // a connection string requests SSL. This avoids "self-signed certificate in certificate chain"
-  // errors for poolers like Supabase. If you prefer strict verification, unset this.
+  // SSL configuration logic:
+  // - If PGSSL_DISABLE === 'true' or PGSSLMODE === 'disable' => do not use SSL
+  // - If PGSSLMODE is 'require' or connection string hints ssl => use ssl with rejectUnauthorized=false
+  // - If PGSSLMODE is 'verify-ca' or 'verify-full' => use ssl with strict verification
   try {
-    if (connectionString) {
-      // heuristics: supabase hosts, pooler hosts, or explicit sslmode
-      const wantSsl = /sslmode=require|sslmode=verify-ca|ssl=true|supabase|supa=base-pooler|pooler/i.test(connectionString);
-      if (wantSsl) {
+  const pgSslDisable = (process.env.PGSSL_DISABLE || '').toLowerCase() === 'true' || (process.env.PGSSLMODE || '').toLowerCase() === 'disable';
+    const pgSslMode = (process.env.PGSSLMODE || '').toLowerCase();
+    if (!pgSslDisable) {
+      const connHintsSsl = connectionString && /sslmode=require|sslmode=verify-ca|ssl=true|sslmode=verify-full|supabase|supa=base-pooler|pooler/i.test(connectionString);
+      if (pgSslMode === 'require' || connHintsSsl) {
         opts.ssl = { rejectUnauthorized: false };
+      } else if (pgSslMode === 'verify-ca' || pgSslMode === 'verify-full') {
+        opts.ssl = { rejectUnauthorized: true };
       }
+    }
+    // If explicitly disabled, force ssl=false to override connection string hints
+    if (pgSslDisable) {
+      opts.ssl = false;
     }
   } catch (e) {
     // ignore
@@ -78,7 +86,9 @@ function getPool() {
       } catch (err: any) {
         // Mask the connection string when logging; show the host and the error message
         const maskedConn = (connectionString || '').replace(/:(.+?)@/, ':*****@');
-        console.error('Postgres connection test FAILED for', maskedConn, 'error=', err && err.message ? err.message : err);
+        // also show chosen SSL envs (not the secret)
+        const sslInfo = { PGSSLMODE: process.env.PGSSLMODE || null, PGSSL_DISABLE: process.env.PGSSL_DISABLE || null };
+        console.error('Postgres connection test FAILED for', maskedConn, 'sslInfo=', sslInfo, 'error=', err && err.message ? err.message : err);
       }
     })();
   }
