@@ -20,7 +20,9 @@ import { randomUUID } from 'crypto';
 */
 
 function buildConnectionString() {
-  // prefer explicit POSTGRES_URL, then DATABASE_URL, else build from parts
+  // prefer non-pooling explicit POSTGRES_URL first (useful for direct VPS connections),
+  // then POSTGRES_URL (pooling), then DATABASE_URL, else build from parts
+  if (process.env.POSTGRES_URL_NON_POOLING) return process.env.POSTGRES_URL_NON_POOLING;
   if (process.env.POSTGRES_URL) return process.env.POSTGRES_URL;
   if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
 
