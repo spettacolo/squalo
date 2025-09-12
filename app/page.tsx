@@ -148,7 +148,7 @@ export default function HomePage() {
         aria-hidden
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         /*style={{ /*backgroundImage: `url(${BG_URL})`, backgroundColor: '#2e59adff' }}*/
-        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 25%, #1e40af 50%, #1d4ed8 75%, #2563eb 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0a192f 0%, #1e3a8a 25%, #1e40af 50%, #2563eb 75%, #1e293b 100%)' }}
         /*style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 25%, #1e40af 50%, #2563eb 75%, #1d4ed8 100%)' }} OLD PALETTE*/
         /*style={{ background: 'linear-gradient(135deg, #212121 0%, #1a1a1a 25%, #303030 50%, #0a0a0a 75%, #2a2a2a 100%)' }}*/
         /*style={{ background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #121212 50%, #181818 75%, #0f0f0f 100%)' }}*/
