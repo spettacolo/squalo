@@ -12,7 +12,7 @@ const DEFAULTS: Entry[] = [
   { key: "trx", label: "trx", address: "TRUEmbByAT...WP77", full: "TRUEmbByAT3Xv1eXhET6TtpQK2JzUvWP77" },
   { key: "sol", label: "sol", address: "god2M9qTYe...M5ci", full: "god2M9qTYeJerPk6ASTabqkQPQgjSrJ13PbtAD2M5ci" },
   { key: "ltc", label: "ltc", address: "LUCKwkFgUW...RYEG", full: "LUCKwkFgUW6XiG6xyGVsEhkWH2ZyVoRYEG" },
-  { key: "paypal", label: "paypal", address: "click", href: "https://paypal.me/SqualoDev", full: "https://paypal.me/SqualoDev" },
+  /*{ key: "paypal", label: "paypal", address: "click", href: "https://paypal.me/SqualoDev", full: "https://paypal.me/SqualoDev" },*/
 ];
 
 export default function Donations({ entries = DEFAULTS }: { entries?: Entry[] }) {
