@@ -43,17 +43,4 @@ export async function POST(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
-  try {
-    const url = new URL(request.url);
-    const id = url.searchParams.get('id');
-    if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 });
-    const d = await getDb();
-    const ok = await d.deleteMessage(id);
-    return NextResponse.json({ success: ok });
-  } catch (e: any) {
-    console.error('DELETE /api/shoutbox error:', e);
-    const status = e && e.message && e.message.includes('No Postgres configured') ? 503 : 500;
-    return NextResponse.json({ error: 'Failed' }, { status });
-  }
-}
+
