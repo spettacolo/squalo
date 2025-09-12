@@ -11,6 +11,7 @@ const DEFAULTS: Entry[] = [
   { key: "eth", label: "eth", address: "0x00000000...9f39", full: "0x00000000ddca05d85b4dcffcea97567880989f39" },
   { key: "trx", label: "trx", address: "TRUEmbByAT...WP77", full: "TRUEmbByAT3Xv1eXhET6TtpQK2JzUvWP77" },
   { key: "sol", label: "sol", address: "god2M9qTYe...M5ci", full: "god2M9qTYeJerPk6ASTabqkQPQgjSrJ13PbtAD2M5ci" },
+  { key: "ltc", label: "ltc", address: "LUCKwkFgUW...RYEG", full: "LUCKwkFgUW6XiG6xyGVsEhkWH2ZyVoRYEG" },
   { key: "paypal", label: "paypal", address: "click", href: "https://paypal.me/SqualoDev", full: "https://paypal.me/SqualoDev" },
 ];
 
@@ -35,15 +36,15 @@ export default function Donations({ entries = DEFAULTS }: { entries?: Entry[] })
             <b className="w-16 lowercase text-xs text-shark-sand/80">{e.label}</b>
 
             {/* Colonna address */}
-            <div className="w-64 text-left">
+            <div className="w-64 text-left flex items-center">
               {e.href ? (
                 <a
                   href={e.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="donation-address donation-clickable underline-offset-2 hover:underline block truncate"
+                  className="donation-address donation-clickable underline-offset-2 hover:underline inline-flex items-center truncate"
                 >
-                  {e.address}
+                  <span className="truncate">{e.address}</span>
                   <svg
                     className="inline-block ml-2 align-middle"
                     width="1rem"
