@@ -69,7 +69,17 @@ function Shoutbox() {
 
   function formatLog(m: any) {
     try {
-      const d = new Date(m.createdAt);
+      // Accept either created_at (Postgres) or createdAt (JS) naming
+      const raw = m.created_at ?? m.createdAt ?? m.createdAtUtc ?? m.created_at_utc ?? null;
+      if (!raw) return m.text;
+      const d = new Date(raw);
+      if (Number.isNaN(d.getTime())) {
+        // If the date is invalid, attempt to parse ISO-like strings more leniently
+        const parsed = Date.parse(String(raw));
+        if (Number.isNaN(parsed)) return m.text;
+        const d2 = new Date(parsed);
+        return `[${d2.toLocaleDateString()} - ${d2.toLocaleTimeString()}] ${m.text}`;
+      }
       return `[${d.toLocaleDateString()} - ${d.toLocaleTimeString()}] ${m.text}`;
     } catch (e) {
       return m.text;
