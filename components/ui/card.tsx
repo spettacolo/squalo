@@ -4,8 +4,10 @@ import { cn } from "@/lib/utils"
 
 function Card({ className, style, ...props }: React.ComponentProps<"div">) {
   const defaultStyle: React.CSSProperties = {
-    background: 'rgba(255, 255, 255, 0.21)',
-    border: '1px solid rgba(255, 255, 255, 0.3)',
+    // slightly more transparent background to keep the glass effect but reduce visual weight
+    background: 'rgba(255, 255, 255, 0.12)',
+    // soften border to match reduced opacity
+    border: '1px solid rgba(255, 255, 255, 0.22)',
     boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
     backdropFilter: 'blur(5px)',
     WebkitBackdropFilter: 'blur(5px)'
