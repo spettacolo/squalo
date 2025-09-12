@@ -50,14 +50,36 @@ function getPool() {
   const opts: any = {};
   if (connectionString) opts.connectionString = connectionString;
 
-  // If the connection string includes sslmode=require or looks like a Supabase URL,
-  // ensure pg uses SSL and accepts the server certificate (rejectUnauthorized=false)
-  if (connectionString && /sslmode=require|sslmode=verify-ca|ssl=true|supabase|supa=base-pooler/i.test(connectionString)) {
-    opts.ssl = { rejectUnauthorized: false };
+  // Force SSL (without strict verification) for known hosted providers or when
+  // a connection string requests SSL. This avoids "self-signed certificate in certificate chain"
+  // errors for poolers like Supabase. If you prefer strict verification, unset this.
+  try {
+    if (connectionString) {
+      // heuristics: supabase hosts, pooler hosts, or explicit sslmode
+      const wantSsl = /sslmode=require|sslmode=verify-ca|ssl=true|supabase|supa=base-pooler|pooler/i.test(connectionString);
+      if (wantSsl) {
+        opts.ssl = { rejectUnauthorized: false };
+      }
+    }
+  } catch (e) {
+    // ignore
   }
 
   pool = new Pool(opts);
   anyGlobal.__pgPool = pool;
+  // Optional quick connectivity check for debugging. Set DB_DEBUG=true on Vercel to enable.
+  if (process.env.DB_DEBUG === 'true') {
+    (async () => {
+      try {
+        const r = await pool.query('SELECT 1');
+        console.log('Postgres connection test OK:', r && r.rows ? r.rows.length : 'no-rows');
+      } catch (err: any) {
+        // Mask the connection string when logging; show the host and the error message
+        const maskedConn = (connectionString || '').replace(/:(.+?)@/, ':*****@');
+        console.error('Postgres connection test FAILED for', maskedConn, 'error=', err && err.message ? err.message : err);
+      }
+    })();
+  }
   return pool;
 }
 
