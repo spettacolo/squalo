@@ -20,88 +20,50 @@ const BG_URL = "/squalo_bg.svg";
 
 function Shoutbox() {
   const [text, setText] = useState("");
-  const [messages, setMessages] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [messages, setMessages] = useState<string[]>([]);
 
-  async function fetchMessages() {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/shoutbox');
-      if (!res.ok) throw new Error('Failed to load');
-      const data = await res.json();
-      setMessages(data);
-    } catch (e: any) {
-      setError(e.message || 'Error');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  React.useEffect(() => {
-    fetchMessages();
-  }, []);
-
-  async function send() {
+  function send() {
     const trimmed = text.trim();
     if (!trimmed) return;
-    try {
-      const res = await fetch('/api/shoutbox', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: trimmed }) });
-      if (!res.ok) throw new Error('Failed to send');
-      const msg = await res.json();
-      setMessages((m) => [msg, ...m].slice(0, 200));
-      setText('');
-    } catch (e: any) {
-      setError(e.message || 'Send failed');
-    }
-  }
-
-  async function remove(id: string) {
-    try {
-      const res = await fetch('/api/shoutbox?id=' + encodeURIComponent(id), { method: 'DELETE' });
-      if (!res.ok) throw new Error('Delete failed');
-      const json = await res.json();
-      if (json.success) setMessages((m) => m.filter((x) => x.id !== id));
-    } catch (e: any) {
-      setError(e.message || 'Delete failed');
-    }
-  }
-
-  function formatLog(m: any) {
-    try {
-      const d = new Date(m.createdAt);
-      return `[${d.toLocaleDateString()} - ${d.toLocaleTimeString()}] ${m.text}`;
-    } catch (e) {
-      return m.text;
-    }
+    setMessages((m) => [trimmed, ...m].slice(0, 20)); // keep last 20
+    setText("");
   }
 
   return (
     <div className="mt-3">
       <div className="flex flex-col sm:flex-row gap-3 items-center">
-        <div className="flex-1 w-full rounded-lg bg-transparent ring-1 ring-shark-light/10 p-2" style={{ boxShadow: 'inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02)' }}>
-          <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} className="w-full resize-none bg-transparent outline-none text-shark-sand placeholder-shark-sand/60 px-2 py-1" placeholder="Send a message..." />
+        <div
+          className="flex-1 w-full rounded-lg bg-transparent ring-1 ring-shark-light/10 p-2"
+          style={{ boxShadow: 'inset 0 6px 20px rgba(0,0,0,0.65), inset 0 -3px 8px rgba(255,255,255,0.02)' }}
+        >
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={3}
+            className="w-full resize-none bg-transparent outline-none text-shark-sand placeholder-shark-sand/60 px-2 py-1"
+            placeholder="Send a message..."
+          />
         </div>
 
         <div className="flex-shrink-0 self-center sm:self-auto">
-          <button type="button" onClick={send} aria-label="Invia" className="shout-send flex items-center justify-center w-12 h-12 rounded-lg text-white">
+          <button
+            type="button"
+            onClick={send}
+            aria-label="Invia"
+            className="shout-send flex items-center justify-center w-12 h-12 rounded-lg text-white"
+          >
             <img src="/send.svg" alt="Invia" className="w-6 h-6" draggable={false} onDragStart={(e: React.DragEvent<HTMLImageElement>) => e.preventDefault()} />
           </button>
         </div>
       </div>
 
       <div className="mt-3 max-h-48 overflow-auto space-y-2">
-        {loading ? (
-          <div className="text-sm text-shark-sand/60">Loading...</div>
-        ) : error ? (
-          <div className="text-sm text-red-400">{error}</div>
-        ) : messages.length === 0 ? (
+        {messages.length === 0 ? (
           <div className="text-sm text-shark-sand/60">No messages yet.</div>
         ) : (
-          messages.map((m) => (
-            <div key={m.id} className="flex items-start justify-between text-sm rounded-md bg-shark-light/5 px-3 py-2 text-shark-sand">
-              <div className="whitespace-pre-wrap">{formatLog(m)}</div>
-              <button aria-label="delete" title="Delete" onClick={() => remove(m.id)} className="ml-3 text-xs text-shark-sand/60 hover:text-red-400">✕</button>
+          messages.map((m, i) => (
+            <div key={i} className="text-sm rounded-md bg-shark-light/5 px-3 py-2 text-shark-sand">
+              {m}
             </div>
           ))
         )}
