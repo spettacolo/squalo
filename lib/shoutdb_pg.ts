@@ -20,17 +20,33 @@ import { randomUUID } from 'crypto';
 */
 
 function buildConnectionString() {
-  // prefer non-pooling explicit POSTGRES_URL first (useful for direct VPS connections),
-  // then POSTGRES_URL (pooling), then DATABASE_URL, else build from parts
-  if (process.env.POSTGRES_URL_NON_POOLING) return process.env.POSTGRES_URL_NON_POOLING;
-  if (process.env.POSTGRES_URL) return process.env.POSTGRES_URL;
-  if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
+  // Neon / Vercel recommended env vars:
+  // - prefer unpooled connection (DIRECT) first when present (DATABASE_URL_UNPOOLED or POSTGRES_URL_NON_POOLING)
+  // - then prefer pooled DATABASE_URL / POSTGRES_URL
+  // - finally fall back to individual PG*/POSTGRES_* parts
+  const unpooled = process.env.DATABASE_URL_UNPOOLED || process.env.POSTGRES_URL_NON_POOLING || process.env.PGHOST_UNPOOLED;
+  if (unpooled && typeof unpooled === 'string' && unpooled.trim() !== '') {
+    // If PGHOST_UNPOOLED was set (rare), prefer explicit URL vars; otherwise return the URL
+    if (process.env.DATABASE_URL_UNPOOLED) return process.env.DATABASE_URL_UNPOOLED;
+    if (process.env.POSTGRES_URL_NON_POOLING) return process.env.POSTGRES_URL_NON_POOLING;
+  }
 
-  const user = process.env.POSTGRES_USER;
-  const host = process.env.POSTGRES_HOST;
-  const password = process.env.POSTGRES_PASSWORD;
-  const port = process.env.POSTGRES_PORT || '5432';
-  const db = process.env.POSTGRES_DB || 'postgres';
+  // Pooled connection strings
+  if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
+  if (process.env.POSTGRES_URL) return process.env.POSTGRES_URL;
+
+  // Prisma / other variants
+  if (process.env.POSTGRES_PRISMA_URL) return process.env.POSTGRES_PRISMA_URL;
+
+  // Support explicit no-ssl URL (legacy helper variable)
+  if (process.env.POSTGRES_URL_NO_SSL) return process.env.POSTGRES_URL_NO_SSL;
+
+  // Build from parts: prefer POSTGRES_* then PG* vars
+  const user = process.env.POSTGRES_USER || process.env.PGUSER;
+  const host = process.env.POSTGRES_HOST || process.env.PGHOST;
+  const password = process.env.POSTGRES_PASSWORD || process.env.PGPASSWORD;
+  const port = process.env.POSTGRES_PORT || process.env.PGPORT || '5432';
+  const db = process.env.POSTGRES_DATABASE || process.env.PGDATABASE || process.env.POSTGRES_DB || 'postgres';
   if (user && host) {
     const auth = password ? `${encodeURIComponent(user)}:${encodeURIComponent(password)}@` : `${encodeURIComponent(user)}@`;
     return `postgresql://${auth}${host}:${port}/${db}`;
