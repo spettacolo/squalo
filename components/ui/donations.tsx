@@ -36,15 +36,15 @@ export default function Donations({ entries = DEFAULTS }: { entries?: Entry[] })
             <b className="w-16 lowercase text-xs text-shark-sand/80">{e.label}</b>
 
             {/* Colonna address */}
-            <div className="w-64 text-left flex items-center">
+            <div className="w-64 text-left">
               {e.href ? (
                 <a
                   href={e.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="donation-address donation-clickable underline-offset-2 hover:underline inline-flex items-center truncate"
+                  className="donation-address donation-clickable underline-offset-2 hover:underline block truncate"
                 >
-                  <span className="truncate">{e.address}</span>
+                  {e.address}
                   <svg
                     className="inline-block ml-2 align-middle"
                     width="1rem"
