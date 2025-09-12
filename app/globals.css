@@ -216,6 +216,28 @@ html, body, #__next {
   scrollbar-color: rgba(255,255,255,0.06) rgba(29,78,216,0.08);
 }
 
+/* Hide scrollbars visually but keep scrolling working.
+   - Targets the main scrolling container `.content-scroll` and any
+     elements using `overflow-auto` (like the shoutbox message list).
+   - Works across WebKit (Chrome/Safari/Android webviews), Firefox and IE/Edge.
+   - If you prefer to hide only certain elements, add the `no-scrollbar`
+     utility class to those elements and update selectors below.
+*/
+.content-scroll,
+.overflow-auto,
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.content-scroll::-webkit-scrollbar,
+.overflow-auto::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+  width: 0;
+  height: 0;
+}
+
 /* particle background styles */
 .particle-container {
   position: fixed;
