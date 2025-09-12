@@ -43,9 +43,40 @@ function getPool() {
   if (pool) return pool;
   // Use a global cache to avoid creating multiple pools in serverless/hot-reload environments
   const anyGlobal = global as any;
+  // If a pool already exists on the global (from a previous hot-reload), verify
+  // that it was created with the same connection string. If not, close it and
+  // recreate to avoid accidentally connecting to the wrong host (for example
+  // when env vars changed between reloads).
   if (anyGlobal.__pgPool) {
-    pool = anyGlobal.__pgPool;
-    return pool;
+    try {
+      const existingConn = anyGlobal.__pgPool && anyGlobal.__pgPool.options && anyGlobal.__pgPool.options.connectionString;
+      // If existingConn differs from what we'd build now (including missing
+      // existingConn when a new connection string is present), shut it down and recreate.
+      const newConn = buildConnectionString();
+      if (newConn && existingConn !== newConn) {
+        if (process.env.DB_DEBUG === 'true') {
+          const maskedExisting = existingConn ? String(existingConn).replace(/:(.+?)@/, ':*****@') : '<none>';
+          const maskedNew = String(newConn).replace(/:(.+?)@/, ':*****@');
+          console.error('Existing global pgPool uses a different connectionString. Ending old pool.', maskedExisting, '->', maskedNew);
+        }
+        try {
+          anyGlobal.__pgPool.end().catch(() => {});
+        } catch (e) {
+          // ignore
+        }
+        anyGlobal.__pgPool = undefined;
+      } else {
+        pool = anyGlobal.__pgPool;
+        if (process.env.DB_DEBUG === 'true') {
+          const masked = String(existingConn || '').replace(/:(.+?)@/, ':*****@');
+          console.error('Re-using existing global pgPool for', masked);
+        }
+        return pool;
+      }
+    } catch (err) {
+      // If anything goes wrong while inspecting the existing pool, clear it and continue
+      try { anyGlobal.__pgPool = undefined; } catch (e) {}
+    }
   }
 
   const connectionString = buildConnectionString();
@@ -77,6 +108,15 @@ function getPool() {
 
   pool = new Pool(opts);
   anyGlobal.__pgPool = pool;
+  if (process.env.DB_DEBUG === 'true') {
+    try {
+      const masked = (opts.connectionString || '').replace(/:(.+?)@/, ':*****@');
+      const sslSummary = opts.ssl === false ? 'disabled' : (opts.ssl && opts.ssl.rejectUnauthorized === false ? 'enabled(insecure)' : 'enabled(strict)');
+      console.error('Created new pgPool', { connectionString: masked, ssl: sslSummary });
+    } catch (e) {
+      // ignore logging errors
+    }
+  }
   // Optional quick connectivity check for debugging. Set DB_DEBUG=true on Vercel to enable.
   if (process.env.DB_DEBUG === 'true') {
     (async () => {
