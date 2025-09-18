@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import ParticleBackground from "@/components/ui/particle-background";
 import Donations from "@/components/ui/donations";
+import ProjectCard from "@/components/ui/project-card";
 import SpotifyNowPlaying from "@/components/ui/spotify";
 
 const BG_URL = "/squalo_bg.svg";
@@ -263,10 +264,15 @@ export default function HomePage() {
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
                 <h3 className="text-xl font-semibold">Projects</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div key={i} className="h-36 rounded-lg bg-shark-light/6 flex items-center justify-center">
-                      <span className="text-shark-sand/80">Project {i} (soon)</span>
-                    </div>
+                  {[
+                    { title: "Project Alpha", description: "A short description of project Alpha.", imgSrc: "/image.png", href: "https://example.com/alpha" },
+                    { title: "Project Beta", description: "A short description of project Beta.", imgSrc: "/image.png", href: "https://example.com/beta" },
+                    { title: "Project Gamma", description: "A short description of project Gamma.", imgSrc: "/image.png", href: "https://example.com/gamma" },
+                    { title: "Project Delta", description: "A short description of project Delta.", imgSrc: "/image.png", href: "https://example.com/delta" },
+                    { title: "Project Epsilon", description: "A short description of project Epsilon.", imgSrc: "/image.png", href: "https://example.com/epsilon" },
+                    { title: "Project Zeta", description: "A short description of project Zeta.", imgSrc: "/image.png", href: "https://example.com/zeta" },
+                  ].map((p, idx) => (
+                    <ProjectCard key={idx} title={p.title} description={p.description} imgSrc={p.imgSrc} href={p.href} />
                   ))}
                 </div>
               </motion.div>
