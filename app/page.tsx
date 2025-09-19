@@ -265,12 +265,8 @@ export default function HomePage() {
                 <h3 className="text-xl font-semibold">Projects</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                   {[
-                    { title: "Project Alpha", description: "A short description of project Alpha.", imgSrc: "/image.png", href: "https://example.com/alpha" },
-                    { title: "Project Beta", description: "A short description of project Beta.", imgSrc: "/image.png", href: "https://example.com/beta" },
-                    { title: "Project Gamma", description: "A short description of project Gamma.", imgSrc: "/image.png", href: "https://example.com/gamma" },
-                    { title: "Project Delta", description: "A short description of project Delta.", imgSrc: "/image.png", href: "https://example.com/delta" },
-                    { title: "Project Epsilon", description: "A short description of project Epsilon.", imgSrc: "/image.png", href: "https://example.com/epsilon" },
-                    { title: "Project Zeta", description: "A short description of project Zeta.", imgSrc: "/image.png", href: "https://example.com/zeta" },
+                    { title: "UsernameItalia", description: "It's not a real project, but I think it could be one since it's a good business idea.\nI'm still involved with it — you can check out @UsernameItalia on Telegram to see some of the handles, though I haven't shared all of my claims there.", imgSrc: "/usernameitalia.png", href: "https://t.me/usernameitalia" },
+                    /*{ title: "Project Beta", description: "A short description of project Beta.", imgSrc: "/image.png", href: "https://example.com/beta" },*/
                   ].map((p, idx) => (
                     <ProjectCard key={idx} title={p.title} description={p.description} imgSrc={p.imgSrc} href={p.href} />
                   ))}
