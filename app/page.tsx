@@ -110,9 +110,12 @@ function Shoutbox() {
           <div className="text-sm text-shark-sand/60">No messages yet.</div>
         ) : (
           messages.map((m) => (
-            <div key={m.id} className="flex flex-col items-start text-sm rounded-md bg-shark-light/5 px-3 py-2 text-shark-sand">
-              {/* timestamp: smaller and separated so it doesn't occupy message horizontal space */}
-              <div className="text-xs text-shark-sand/60 mb-1 select-none">
+            <div key={m.id} className="relative text-sm rounded-md bg-shark-light/5 px-3 py-3 text-shark-sand">
+              {/* message text: add right padding so timestamp has room */}
+              <div className="whitespace-pre-wrap pr-16 text-sm">{m.text}</div>
+
+              {/* timestamp: bottom-right small muted text (same gray used in About extras) */}
+              <div className="absolute bottom-2 right-3 text-xs text-shark-sand/60 select-none">
                 {(() => {
                   try {
                     const raw = m.created_at ?? m.createdAt ?? m.createdAtUtc ?? m.created_at_utc ?? null;
@@ -130,7 +133,6 @@ function Shoutbox() {
                   }
                 })()}
               </div>
-              <div className="whitespace-pre-wrap text-sm">{m.text}</div>
             </div>
           ))
         )}
