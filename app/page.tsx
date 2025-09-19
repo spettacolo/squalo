@@ -110,8 +110,27 @@ function Shoutbox() {
           <div className="text-sm text-shark-sand/60">No messages yet.</div>
         ) : (
           messages.map((m) => (
-            <div key={m.id} className="flex items-start text-sm rounded-md bg-shark-light/5 px-3 py-2 text-shark-sand">
-              <div className="whitespace-pre-wrap">{formatLog(m)}</div>
+            <div key={m.id} className="flex flex-col items-start text-sm rounded-md bg-shark-light/5 px-3 py-2 text-shark-sand">
+              {/* timestamp: smaller and separated so it doesn't occupy message horizontal space */}
+              <div className="text-xs text-shark-sand/60 mb-1 select-none">
+                {(() => {
+                  try {
+                    const raw = m.created_at ?? m.createdAt ?? m.createdAtUtc ?? m.created_at_utc ?? null;
+                    if (!raw) return '';
+                    const d = new Date(raw);
+                    if (Number.isNaN(d.getTime())) {
+                      const parsed = Date.parse(String(raw));
+                      if (Number.isNaN(parsed)) return '';
+                      const d2 = new Date(parsed);
+                      return `[${d2.toLocaleDateString()} - ${d2.toLocaleTimeString()}]`;
+                    }
+                    return `[${d.toLocaleDateString()} - ${d.toLocaleTimeString()}]`;
+                  } catch (e) {
+                    return '';
+                  }
+                })()}
+              </div>
+              <div className="whitespace-pre-wrap text-sm">{m.text}</div>
             </div>
           ))
         )}
