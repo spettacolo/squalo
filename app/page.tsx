@@ -110,28 +110,27 @@ function Shoutbox() {
           <div className="text-sm text-shark-sand/60">No messages yet.</div>
         ) : (
           messages.map((m) => (
-            <div key={m.id} className="relative text-sm rounded-md bg-shark-light/5 px-3 py-3 text-shark-sand">
-              {/* message text: add right padding so timestamp has room */}
-              <div className="whitespace-pre-wrap pr-16 text-sm">{m.text}</div>
-
-              {/* timestamp: bottom-right small muted text (same gray used in About extras) */}
-              <div className="absolute bottom-2 right-3 text-xs text-shark-sand/60 select-none">
-                {(() => {
-                  try {
-                    const raw = m.created_at ?? m.createdAt ?? m.createdAtUtc ?? m.created_at_utc ?? null;
-                    if (!raw) return '';
-                    const d = new Date(raw);
-                    if (Number.isNaN(d.getTime())) {
-                      const parsed = Date.parse(String(raw));
-                      if (Number.isNaN(parsed)) return '';
-                      const d2 = new Date(parsed);
-                      return `[${d2.toLocaleDateString()} - ${d2.toLocaleTimeString()}]`;
+            <div key={m.id} className="text-sm rounded-md bg-shark-light/5 px-3 py-3 text-shark-sand">
+              <div className="whitespace-pre-wrap">
+                {m.text}
+                <span className="notes ml-2 text-[11px] text-[#c1c2c4] whitespace-nowrap select-none">{
+                  (() => {
+                    try {
+                      const raw = m.created_at ?? m.createdAt ?? m.createdAtUtc ?? m.created_at_utc ?? null;
+                      if (!raw) return '';
+                      const d = new Date(raw);
+                      if (Number.isNaN(d.getTime())) {
+                        const parsed = Date.parse(String(raw));
+                        if (Number.isNaN(parsed)) return '';
+                        const d2 = new Date(parsed);
+                        return ` ${d2.toLocaleDateString()} - ${d2.toLocaleTimeString()}`;
+                      }
+                      return ` ${d.toLocaleDateString()} - ${d.toLocaleTimeString()}`;
+                    } catch (e) {
+                      return '';
                     }
-                    return `[${d.toLocaleDateString()} - ${d.toLocaleTimeString()}]`;
-                  } catch (e) {
-                    return '';
-                  }
-                })()}
+                  })()
+                }</span>
               </div>
             </div>
           ))
