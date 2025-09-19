@@ -289,7 +289,7 @@ export default function HomePage() {
 
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
                 <h3 className="text-xl font-semibold">Projects</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 items-stretch auto-rows-fr">
                   {[
                     { title: "UsernameItalia", description: "It's not a real project, but I think it could be one since it's a solid business idea. I'm not the only one working on it — I started it together with my friend Jack (@cancro). You can check out @UsernameItalia on Telegram to see some of the handles, although I haven't posted all of my claims there.", imgSrc: "/usernameitalia.png", href: "https://t.me/usernameitalia" },
                     { title: "Legendary QR", description: "This is a bot that generates custom QR codes. It's not released yet, but you'll be able to check it out on Telegram soon.", imgSrc: "/legendaryqr.png", href: "https://t.me/legendaryqr" },
