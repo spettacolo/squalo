@@ -276,7 +276,7 @@ export default function HomePage() {
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                 <h3 className="text-xl font-semibold">Skills</h3>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {['Python','Java','JavaScript','NodeJS','Golang','Rust','C++','PostgreSQL'].map((s) => (
+                  {['Python','Java','JavaScript','NodeJS','Golang','Rust','C/C++','PostgreSQL', 'Big Data'].map((s) => (
                     <span key={s} className="px-3 py-1 rounded-full bg-shark-light/8 text-sm">{s}</span>
                   ))}
                 </div>
@@ -285,7 +285,7 @@ export default function HomePage() {
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                 <h3 className="text-xl font-semibold">Learning</h3>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {['React','Next.js','TypeScript','Tailwind','GraphQL', 'AI/ML', 'Solidity', 'Web3', 'Blockchain', 'Trading'].map((s) => (
+                  {['React','Next.js','TypeScript','Tailwind', 'AI/ML', 'Solidity', 'Web3', 'Blockchain', 'NoSQL'].map((s) => (
                     <span key={s} className="px-3 py-1 rounded-full bg-shark-light/8 text-sm">{s}</span>
                   ))}
                 </div>
