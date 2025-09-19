@@ -265,7 +265,7 @@ export default function HomePage() {
                 <h3 className="text-xl font-semibold">Projects</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                   {[
-                    { title: "UsernameItalia", description: "It's not a real project, but I think it could be one since it's a good business idea. I'm still involved with it — you can check out @UsernameItalia on Telegram to see some of the handles, though I haven't shared all of my claims there.", imgSrc: "/usernameitalia.png", href: "https://t.me/usernameitalia" },
+                    { title: "UsernameItalia", description: "It's not a real project, but I think it could be one since it's a solid business idea. I'm not the only one working on it — I started it together with my friend Jack (@cancro). You can check out @UsernameItalia on Telegram to see some of the handles, although I haven't posted all of my claims there.", imgSrc: "/usernameitalia.png", href: "https://t.me/usernameitalia" },
                     /*{ title: "Project Beta", description: "A short description of project Beta.", imgSrc: "/image.png", href: "https://example.com/beta" },*/
                   ].map((p, idx) => (
                     <ProjectCard key={idx} title={p.title} description={p.description} imgSrc={p.imgSrc} href={p.href} />
