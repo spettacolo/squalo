@@ -292,7 +292,7 @@ export default function HomePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 items-stretch auto-rows-fr">
                   {[
                     { title: "UsernameItalia", description: "It's not a real project, but I think it could be one since it's a solid business idea. I'm not the only one working on it — I started it together with my friend Jack (@cancro). You can check out @UsernameItalia on Telegram to see some of the handles, although I haven't posted all of my claims there.", imgSrc: "/usernameitalia.png", href: "https://t.me/usernameitalia" },
-                    { title: "Legendary QR", description: "This is a bot that generates custom QR codes. It's not released yet, but you'll be able to check it out on Telegram soon.", imgSrc: "/legendaryqr.png", href: "https://t.me/legendaryqr" },
+                    { title: "Legendary QR", description: "This is a bot that generates fully custom QR codes, designed to be simple, fast, and versatile. It’s not released yet, but very soon you’ll be able to try it directly on Telegram, where you can create personalized codes for links, text, or contacts in just a few taps.", imgSrc: "/legendaryqr.png", href: "https://t.me/legendaryqr" },
                   ].map((p, idx) => (
                     <ProjectCard key={idx} title={p.title} description={p.description} imgSrc={p.imgSrc} href={p.href} />
                   ))}
